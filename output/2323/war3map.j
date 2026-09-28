@@ -63074,10 +63074,10 @@ return true
 endfunction
 function MyPo_BxD takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if Zb[JG]==null then
 set Zb[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63086,16 +63086,16 @@ endif
 call StartSound(BHD("SE\\Sanji.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0상디 : |r|cff00fa9a사나이 상디! 지금 지옥에서 귀환했습니다!|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_BxN takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 set Zd[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(Zd[JG],$41313630)
@@ -63105,25 +63105,25 @@ call UnitAddAbility(Ze[JG],$41313631)
 call StartSound(BHD("SE\\Zoro.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0롤로노아 조로 : |r|cff00fa9a악연이든 기연이든 역귀를 태워버린 너희의 운명을 탓해라!|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_Bxh takes nothing returns boolean
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-call Bjp(Ys)
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+call Bjp(ml_Ys)
 call StartSound(BHD("SE\\Nami.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0나미 : |r|cff00fa9a네가 아무리 강해도 내 예보는 빗나가지 않아! |r")
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bx8 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 call BH7(JG)
 set Zx[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63131,7 +63131,7 @@ call UnitAddAbility(Zx[JG],$41313632)
 call StartSound(BHD("SE\\Usopp.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0우솝 : |r|cff00fa9a옛날엔 허풍을 펑펑 날릴 수 있었는데 지금은 그게 진짜로 돼 버린단 말이지!|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
@@ -63148,22 +63148,22 @@ return true
 endfunction
 function MyPo_Byd takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 set aH[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(aH[JG],$41313636)
 call UnitAddAbility(aH[JG],$41304235)
 set aI[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(aI[JG],$41313635)
-call Bjp(Ys)
+call Bjp(ml_Ys)
 set aJ=true
 call StartSound(BHD("SE\\Robin.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0니코 로빈 : |r|cff00fa9a그 사람들을 위해서라면 난 악마라도 되어주겠어!|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
@@ -63175,14 +63175,14 @@ return true
 endfunction
 function MyPo_BzH takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
+local unit ml_Ys
 local unit JI
 local player RS
 local location Id
-set Ys=FirstOfGroup(Q6)
-set RS=GetOwningPlayer(Ys)
-set Id=GetUnitLoc(Ys)
-set aZ[JG]=Ys
+set ml_Ys=FirstOfGroup(Q6)
+set RS=GetOwningPlayer(ml_Ys)
+set Id=GetUnitLoc(ml_Ys)
+set aZ[JG]=ml_Ys
 call BH5(JG)
 set ac[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(ac[JG],$41313637)
@@ -63190,45 +63190,45 @@ call UnitAddAbility(ac[JG],$41304C57)
 call StartSound(BHD("SE\\Brook.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0브룩 : |r|cff00fa9a(다 같이) 요호호호~|r")
 set LK[JG]=LK[JG]+3
-call DisplayTimedTextToPlayer(RS,0,0,5,"|cffF15F5F[시스템]|r "+GetUnitName(Ys)+" 의 효과로 자신의 라인존 |cff87cefa마법방어력 3%|r 감소!")
+call DisplayTimedTextToPlayer(RS,0,0,5,"|cffF15F5F[시스템]|r "+GetUnitName(ml_Ys)+" 의 효과로 자신의 라인존 |cff87cefa마법방어력 3%|r 감소!")
 call RemoveLocation(Id)
 set JI=null
 set RS=null
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_BzZ takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if not Bcu(ag[JG]) then
-set ag[JG]=CreateUnitAtLoc(GetOwningPlayer(Ys),$68303456,Id,bj_UNIT_FACING)
+set ag[JG]=CreateUnitAtLoc(GetOwningPlayer(ml_Ys),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(ag[JG],$41313335)
 call UnitAddAbility(ag[JG],$41305545)
 call UnitAddAbility(ag[JG],$41313454)
-set ah[JG]=CreateUnitAtLoc(GetOwningPlayer(Ys),$68303456,Id,bj_UNIT_FACING)
+set ah[JG]=CreateUnitAtLoc(GetOwningPlayer(ml_Ys),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(ah[JG],$41313456)
 endif
-set ai=Ys
+set ai=ml_Ys
 call TriggerExecute(aj)
 call TriggerExecute(ak)
 call StartSound(BHD("SE\\Shanks.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0샹크스 : |r|cff00fa9a이 전쟁을 끝내러 왔다!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bzi takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if am[JG]==null then
 set am[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63239,15 +63239,15 @@ call StartSound(BHD("SE\\Teach.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0검은수염 : |r|cff00fa9a제하하하하! 그래, 이제부터는 나의 시대다!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bz1 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if as[JG]==null then
 set as[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63256,20 +63256,20 @@ call UnitAddAbility(as[JG],$41304C36)
 set at[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(at[JG],$41313638)
 endif
-call Bjp(Ys)
+call Bjp(ml_Ys)
 call StartSound(BHD("SE\\Shira.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0시라호시 : |r|cff00fa9a국왕 넵튠의 딸이에요. 시라호시입니다!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B0G takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if a1[JG]==null then
 set a1[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63282,7 +63282,7 @@ call StartSound(BHD("SE\\Aokiji.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0아오키지 : |r|cff00fa9a거기 비켜주겠나? 그 녀석은 내 친구라고.|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B0S takes nothing returns boolean
@@ -63301,10 +63301,10 @@ return true
 endfunction
 function MyPo_B0s takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if bL[JG]==null then
 set bL[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63313,20 +63313,20 @@ call UnitAddAbility(bL[JG],$41313057)
 set bM[JG]=CreateUnitAtLoc(Player(JG),$68304635,Id,bj_UNIT_FACING)
 call UnitAddAbility(bM[JG],$41304A31)
 endif
-call Bjp(Ys)
+call Bjp(ml_Ys)
 call StartSound(BHD("SE\\Law.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0트라팔가 로우 : |r|cff00fa9a지금부터 무슨 일이 일어나도 도망칠 곳은 없어! 정신 똑바로 차려, 너희들!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B05 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if bY[JG]==null then
 set bY[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63337,15 +63337,15 @@ call StartSound(BHD("SE\\DP.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0돈키호테 도플라밍고 : |r|cff00fa9a승자만이 정의다!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B1b takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if bd[JG]==null then
 set bd[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63360,7 +63360,7 @@ call StartSound(BHD("SE\\sabo.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0사보 : |r|cff00fa9a그 녀석의 의지는 우리들이 이어가는 거야!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B1e takes nothing returns boolean
@@ -63371,12 +63371,12 @@ return true
 endfunction
 function MyPo_B1s takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
+local unit ml_Ys
 local location Id
 local player RS
-set Ys=FirstOfGroup(Q6)
-call Bjp(Ys)
-set RS=GetOwningPlayer(Ys)
+set ml_Ys=FirstOfGroup(Q6)
+call Bjp(ml_Ys)
+set RS=GetOwningPlayer(ml_Ys)
 set Id=GetStartLocationLoc(JG)
 if not Bcu(bj[JG]) then
 set bj[JG]=CreateUnitAtLoc(RS,$68303456,Id,bj_UNIT_FACING)
@@ -63386,7 +63386,7 @@ call StartSound(BHD("SE\\tashigi.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0타시기 : |r|cff00fa9a무엇을 주저하고 있는 겁니까!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 set RS=null
 return true
 endfunction
@@ -63406,10 +63406,10 @@ return true
 endfunction
 function MyPo_B2m takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if b8[JG]==null then
 set b8[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63417,20 +63417,20 @@ call UnitAddAbility(b8[JG],$41313649)
 call UnitAddAbility(b8[JG],$41304D30)
 call UnitAddAbility(b8[JG],$41313155)
 endif
-call Bjp(Ys)
+call Bjp(ml_Ys)
 call StartSound(BHD("SE\\jinbe.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0징베 : |r|cff00fa9a미래의 해적왕의 선원이 될 남자가 사황 따위에게 겁먹을 것 같으냐!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B2q takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if cF[JG]==null then
 set cF[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63441,15 +63441,15 @@ call StartSound(BHD("SE\\snakeman.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0몽키.D.루피 : |r|cff00fa9a스네이크맨!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B24 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if cK[JG]==null then
 set cK[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63459,23 +63459,23 @@ set cL[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(cL[JG],$4131364B)
 call UnitAddAbility(cL[JG],$4131304C)
 endif
-set cM[JG]=CreateItemLoc($49303047,GetUnitLoc(Ys))
+set cM[JG]=CreateItemLoc($49303047,GetUnitLoc(ml_Ys))
 call SetItemUserData(cM[JG],JG)
-call UnitAddItemSwapped(cM[JG],Ys)
+call UnitAddItemSwapped(cM[JG],ml_Ys)
 call SetItemCharges(cM[JG],1)
 call StartSound(BHD("SE\\Kid.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0유스타스 키드 : |r|cff00fa9a그 누구도 뒤쳐지지 마라! 죽을 기세로 따라와라!|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_B3N takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if cW[JG]==null then
 set cW[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63483,22 +63483,22 @@ call UnitAddAbility(cW[JG],$4131364C)
 call UnitAddAbility(cW[JG],$41303545)
 call UnitAddAbility(cW[JG],$41303546)
 endif
-if not Bjp(Ys) and GetPlayerTechCount(GetOwningPlayer(Ys),$52303052,true)==1 then
-call UnitAddAbility(Ys,$41313142)
+if not Bjp(ml_Ys) and GetPlayerTechCount(GetOwningPlayer(ml_Ys),$52303052,true)==1 then
+call UnitAddAbility(ml_Ys,$41313142)
 endif
 call StartSound(BHD("SE\\yamato.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0야마토 : |r|cff00fa9a아카자야의 사무라이들도 죽은 지금, 누군가가 오뎅의 의지를 이어야 해! |r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_B3b takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if cX[JG]==null then
 set cX[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63511,12 +63511,12 @@ endif
 set cZ[JG]=CreateItemLoc($49303034,GetStartLocationLoc(GetPlayerStartLocation(Player(JG))))
 call SetItemUserData(GetLastCreatedItem(),JG)
 call SetItemCharges(GetLastCreatedItem(),1)
-call UnitAddItemSwapped(cZ[JG],Ys)
+call UnitAddItemSwapped(cZ[JG],ml_Ys)
 call StartSound(BHD("SE\\ryokugyu.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffc0c0c0료쿠규 : |r|cff00fa9a롸하하! 누님이 앙하고 해주면 먹을텐데 말야... 롸하하하하하!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B4B takes nothing returns boolean
@@ -63552,10 +63552,10 @@ return true
 endfunction
 function MyPo_B44 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if dD[JG]==null then
 set dD[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63565,14 +63565,14 @@ set dE[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(dE[JG],$41313651)
 call UnitAddAbility(dE[JG],$41304F50)
 endif
-set VW=Ys
-call Bjp(Ys)
+set VW=ml_Ys
+call Bjp(ml_Ys)
 call TriggerExecute(VX)
 call StartSound(BHD("SE\\hancock.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|CFFFFFA78보아 핸콕 : |r|CFFC15AF4\"강한 자야말로 아름답지! 힘껏 싸우다 쓰러져 가라.\"|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B5M takes nothing returns boolean
@@ -63603,24 +63603,24 @@ return true
 endfunction
 function MyPo_B6B takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
-set Ys=FirstOfGroup(Q6)
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
 call StartSound(BHD("SE\\mihawk.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|CFFFFFA78쥬라클 미호크 : |CFFC15AF4자신을 알고 세상을 알고 강해져라! 이 나를 넘어봐라!")
-call Bjp(Ys)
-set Ys=null
+call Bjp(ml_Ys)
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B6U takes nothing returns boolean
 local player RS=MyCurPlayer
 local integer JG=GetPlayerId(RS)
-local unit ZN
+local unit ml_ZN
 call StartSound(BHD("SE\\Odeng.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|CFFFFFA78코즈키 오뎅 : |r|CFFC15AF4\"삶아야 마땅히 오뎅이올시다!\"|r")
 call SetPlayerTechResearchedSwap($52303344,1,RS)
-set ZN=FirstOfGroup(Q6)
+set ml_ZN=FirstOfGroup(Q6)
 if GetPlayerTechCount(RS,$52303052,true)==1 then
-call UnitAddAbility(ZN,$41313142)
+call UnitAddAbility(ml_ZN,$41313142)
 endif
 set aJ=true
 if dc==false then
@@ -63628,7 +63628,7 @@ set dc=true
 call TriggerRegisterAnyUnitEventBJ(dd,EVENT_PLAYER_UNIT_ATTACKED)
 call EnableTrigger(dd)
 endif
-set ZN=null
+set ml_ZN=null
 set RS=null
 return true
 endfunction
@@ -63646,14 +63646,14 @@ endfunction
 function MyPo_B7v takes nothing returns boolean
 local player RS=MyCurPlayer
 local integer JG=GetPlayerId(RS)
-local unit ZN
-set ZN=FirstOfGroup(Q6)
+local unit ml_ZN
+set ml_ZN=FirstOfGroup(Q6)
 if GetPlayerTechCount(RS,$52303052,true)==1 then
-call UnitAddAbility(ZN,$41313142)
+call UnitAddAbility(ml_ZN,$41313142)
 endif
 call StartSound(BHD("SE\\Ryuma.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,3,"|CFFFFFA78류마 : |r|CFFC15AF4검은 검사의 목숨! 검집을 건드리는 건 결투 신청과 같다. 승부다!|r")
-set ZN=null
+set ml_ZN=null
 set RS=null
 set du[JG]=true
 set dv[JG]=0
@@ -63662,7 +63662,7 @@ endfunction
 function MyPr_B7v takes nothing returns boolean
 local player RS=MyCurPlayer
 local integer JG=GetPlayerId(RS)
-local unit ZN
+local unit ml_ZN
 if du[JG]==true then
 call DisplayTextToPlayer(MyCurPlayer,0,0,"'류마 - 영원' 은 한개만 조합할 수 있습니다.")
 return false
@@ -63672,21 +63672,21 @@ endfunction
 function MyPo_B8E takes nothing returns boolean
 local player RS=MyCurPlayer
 local integer JG=GetPlayerId(RS)
-local unit ZN
-set ZN=FirstOfGroup(Q6)
+local unit ml_ZN
+set ml_ZN=FirstOfGroup(Q6)
 call B8G(JG)
 call StartSound(BHD("SE\\Tesoro.mp3",null,100,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,3,"|CFFFFFA78길드 테조로 : |r|CFFC15AF4모든 것은 황금에 지배되리라!|r")
-set ZN=null
+set ml_ZN=null
 set RS=null
 return true
 endfunction
 function MyPo_B8U takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if eH[JG]==null then
 set eH[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63698,55 +63698,55 @@ call StartSound(BHD("SE\\Roger.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79골.D.로져 : |r|c00cc3337내 보물 말인가? 원한다면 주도록 하지. 찾아라! 나의 모든 것을 그곳에 두고왔다!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B8f takes nothing returns boolean
-local unit Ys
+local unit ml_Ys
 local integer JG
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if eM[JG]==null then
-set eM[JG]=CreateUnitAtLoc(GetOwningPlayer(Ys),$68303456,Id,bj_UNIT_FACING)
+set eM[JG]=CreateUnitAtLoc(GetOwningPlayer(ml_Ys),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(eM[JG],$41304A4B)
 endif
-call SetUnitUserData(Ys,0)
+call SetUnitUserData(ml_Ys,0)
 call StartSound(BHD("SE\\Lailey.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79실버즈 레일리 : |r|c00cc3337젊은 녀석들을 짓밟으면 안되지, 이제부터 시작하는 거다. 그들의 세대는...|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_B8r takes nothing returns boolean
-local unit Ys
+local unit ml_Ys
 local integer JG
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if eO[JG]==null then
-set eO[JG]=CreateUnitAtLoc(GetOwningPlayer(Ys),$68303456,Id,bj_UNIT_FACING)
+set eO[JG]=CreateUnitAtLoc(GetOwningPlayer(ml_Ys),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(eO[JG],$41304954)
 call UnitAddAbility(eO[JG],$41304443)
 endif
-call SetUnitAnimation(Ys,"birth")
-call QueueUnitAnimation(Ys,"stand")
+call SetUnitAnimation(ml_Ys,"birth")
+call QueueUnitAnimation(ml_Ys,"stand")
 call StartSound(BHD("SE\\Gaban.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79스코퍼 가반 : |r|c00cc3337포기해라! 오랫동안 함께 했지만 우리가 로져를 막을 수 있던 적은 없었다.|r")
 call RemoveLocation(Id)
-set Ys=null
+set ml_Ys=null
 set Id=null
 return true
 endfunction
 function MyPo_B81 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if eQ[JG]==null then
 set eQ[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63755,12 +63755,12 @@ call UnitAddAbility(eQ[JG],$41304D54)
 set eR[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(eR[JG],$41313738)
 endif
-call Bjp(Ys)
+call Bjp(ml_Ys)
 call StartSound(BHD("SE\\Siro.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79흰수염 : |r|c00cc3337원피스는 실존한다!")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_B9G takes nothing returns boolean
@@ -63794,44 +63794,44 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79Z : |r|c00cc3337
 return true
 endfunction
 function MyPo_CBL takes nothing returns boolean
-local unit Ys
-local unit en
+local unit ml_Ys
+local unit ml_en
 local integer JG=GetPlayerId(MyCurPlayer)
-set Ys=FirstOfGroup(Q6)
-set en=B_d(JG)
-call UnitAddAbility(Ys,$41305053)
-call UnitMakeAbilityPermanent(Ys,true,$41305053)
+set ml_Ys=FirstOfGroup(Q6)
+set ml_en=B_d(JG)
+call UnitAddAbility(ml_Ys,$41305053)
+call UnitMakeAbilityPermanent(ml_Ys,true,$41305053)
 call StartSound(BHD("SE\\kaido.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79카이도 : |r|c00cc3337세계 최악의 전쟁을 시작해보자고!|r")
-set Ys=null
-set en=null
+set ml_Ys=null
+set ml_en=null
 return true
 endfunction
 function MyPo_CBO takes nothing returns boolean
-local unit ZN
+local unit ml_ZN
 local integer JG=GetPlayerId(MyCurPlayer)
 local location Id
-set ZN=FirstOfGroup(Q6)
+set ml_ZN=FirstOfGroup(Q6)
 set Id=GetStartLocationLoc(JG)
 call StartSound(BHD("SE\\bigmam.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79빅 맘 : |r|c00cc3337마~마마~마마!")
 set es[JG]=CreateItemLoc($49303042,GetStartLocationLoc(GetPlayerStartLocation(Player(JG))))
 call SetItemUserData(GetLastCreatedItem(),JG)
 call SetItemCharges(GetLastCreatedItem(),1)
-call UnitAddItemSwapped(es[JG],ZN)
+call UnitAddItemSwapped(es[JG],ml_ZN)
 if not Bcu(et[JG]) then
-set et[JG]=CreateUnitAtLoc(GetOwningPlayer(ZN),$68303456,Id,bj_UNIT_FACING)
+set et[JG]=CreateUnitAtLoc(GetOwningPlayer(ml_ZN),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(et[JG],$41313453)
 call UnitAddAbility(et[JG],$41313138)
 endif
 set er[JG]=true
 call RemoveLocation(Id)
-set ZN=null
+set ml_ZN=null
 set Id=null
 return true
 endfunction
 function MyPr_CBO takes nothing returns boolean
-local unit ZN
+local unit ml_ZN
 local integer JG=GetPlayerId(MyCurPlayer)
 local location Id
 if er[JG]==true then
@@ -63841,14 +63841,14 @@ endif
 return true
 endfunction
 function MyPo_CBg takes nothing returns boolean
-local unit ZN
-set ZN=FirstOfGroup(Q6)
-call UnitAddItemToSlotById(ZN,$49303931,0)
-call UnitAddItemToSlotById(ZN,$49303932,2)
-call UnitAddItemToSlotById(ZN,$49303933,4)
+local unit ml_ZN
+set ml_ZN=FirstOfGroup(Q6)
+call UnitAddItemToSlotById(ml_ZN,$49303931,0)
+call UnitAddItemToSlotById(ml_ZN,$49303932,2)
+call UnitAddItemToSlotById(ml_ZN,$49303933,4)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00ff8f79더글라스 불릿 : |r|c00cc3337해군도 해적도 내게 거스르는 모든 존재를 전부 죽여주지.")
 call StartSound(BHD("SE\\Bullet.mp3",null,127,1.*1.,false,0,0))
-set ZN=null
+set ml_ZN=null
 return true
 endfunction
 function MyPo_CC5 takes nothing returns boolean
@@ -63858,12 +63858,12 @@ return true
 endfunction
 function MyPo_CDH takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
-set Ys=FirstOfGroup(Q6)
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|c00d19be7페로나 : |r|cff9fefd1홀로홀로홀로홀로~ 내 부하가 될래?|r")
 call StartSound(BHD("SE\\Perona.mp3",null,127,1.*1.,false,0,0))
-call Bjp(Ys)
-set Ys=null
+call Bjp(ml_Ys)
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CDS takes nothing returns boolean
@@ -63913,12 +63913,12 @@ return true
 endfunction
 function MyPo_Bu1 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
-set Yt=Ys
+set Yt=ml_Ys
 call TriggerExecute(Ys)
 if Yq[JG]==null then
 set Yq[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63929,15 +63929,15 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9에넬 : |r|cffd
 call StartSound(BHD("SE\\Enel.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_BvQ takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if Yx[JG]==null then
 set Yx[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63947,15 +63947,15 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9크로커다일 
 call StartSound(BHD("SE\\Crocodile.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bvc takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if Y2[JG]==null then
 set Y2[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -63965,66 +63965,66 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9레베카 : |r |
 call StartSound(BHD("SE\\Rebecca.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bvq takes nothing returns boolean
-local unit Ys
+local unit ml_Ys
 local integer JG
 local player RS
-set Ys=FirstOfGroup(Q6)
-set RS=GetOwningPlayer(Ys)
+set ml_Ys=FirstOfGroup(Q6)
+set RS=GetOwningPlayer(ml_Ys)
 set JG=GetPlayerId(RS)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9아인 : |r|cffdf9d30나는 네오 해군중장 아인! 저항은 목숨만 재촉할 뿐이다.|r")
 call StartSound(BHD("SE\\Ain.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 set RS=null
 return true
 endfunction
 function MyPo_Bvx takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if ZH[JG]==null then
 set ZH[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(ZH[JG],$4130524C)
 endif
-set ZK=Ys
+set ZK=ml_Ys
 call TriggerExecute(ZJ)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9샬롯 카타쿠리 : |r|cffdf9d30분수를 알아라 잡종.|r")
 call StartSound(BHD("SE\\Katakuri.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bv6 takes nothing returns boolean
-local unit ZN
+local unit ml_ZN
 local player RS=MyCurPlayer
 local integer JG=GetPlayerId(RS)
-set ZN=FirstOfGroup(Q6)
+set ml_ZN=FirstOfGroup(Q6)
 if GetPlayerTechCount(RS,$52303052,true)==1 then
-call UnitAddAbility(ZN,$41313142)
+call UnitAddAbility(ml_ZN,$41313142)
 endif
 if ZO[JG]==null then
-set ZO[JG]=CreateUnit(Player(JG),$68303456,GetUnitX(ZN),GetUnitY(ZN),bj_UNIT_FACING)
+set ZO[JG]=CreateUnit(Player(JG),$68303456,GetUnitX(ml_ZN),GetUnitY(ml_ZN),bj_UNIT_FACING)
 call UnitAddAbility(ZO[JG],$41305656)
 endif
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9시노부 : |r|cffdf9d30제 방식대로 당신을 돕겠습니다.|r")
 call StartSound(BHD("SE\\Shinobu.mp3",null,127,1.*1.,false,0,0))
-set ZN=null
+set ml_ZN=null
 set RS=null
 return true
 endfunction
 function MyPo_BwV takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if ZQ[JG]==null then
 set ZQ[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64035,15 +64035,15 @@ call StartSound(BHD("SE\\King.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9킹 : |r|cffdf9d30이 세상에 왕은 하나로 충분해!|r")
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_BwY takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if ZS[JG]==null then
 set ZS[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64053,17 +64053,17 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9패트릭 레드
 call StartSound(BHD("SE\\Redfield.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bwi takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
-call UnitAddItemToSlotById(Ys,$49303032,0)
+call UnitAddItemToSlotById(ml_Ys,$49303032,0)
 if ZW[JG]==null then
 set ZW[JG]=CreateUnitAtLoc(Player(JG),$68304635,Id,bj_UNIT_FACING)
 call UnitAddAbility(ZW[JG],$41313737)
@@ -64071,15 +64071,15 @@ call UnitAddAbility(ZW[JG],$41313736)
 endif
 call StartSound(BHD("SE\\Marco.mp3",null,127,1.*1.,false,0,0))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cff5997c9마르코 : |r|cffdf9d30불사조의 불꽃은 특별하거든.|r")
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_Bw9 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if IL[JG]==null then
 set IL[JG]=CreateUnitAtLoc(Player(JG),$68304635,Id,bj_UNIT_FACING)
@@ -64093,38 +64093,38 @@ return true
 endfunction
 function MyPo_CEd takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 if f9[JG]==null then
 set f9[JG]=CreateGroup()
 endif
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c카마도 네즈코 : |r|cff4FC9DE사람은 지키며 구해야 할 존재, 상처입히지 않아...|r")
 call StartSound(BHD("SE\\Nezuko.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CEo takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
-set gG[JG]=Ys
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
+set gG[JG]=ml_Ys
 call TriggerRegisterUnitEvent(gH,gG[JG],EVENT_UNIT_ISSUED_POINT_ORDER)
 call TriggerRegisterUnitEvent(gH,gG[JG],EVENT_UNIT_ISSUED_ORDER)
-set gG[5]=Ys
+set gG[5]=ml_Ys
 call TriggerExecute(gI)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10," |cffdc143c부릉냐 : |r|cff4FC9DE부릉냐! 전장에 도착했습니다.|r")
 call StartSound(BHD("SE\\Bronya.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CE1 takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if gN[JG]==null then
 set gN[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64134,15 +64134,15 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10," |cffdc143c쿠죠 죠타�
 call StartSound(BHD("SE\\Jotaro.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CFE takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if gS[JG]==null then
 set gS[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64152,15 +64152,15 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c나미카제 미
 call StartSound(BHD("SE\\Minato.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CFN takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if gW[JG]==null then
 set gW[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64170,55 +64170,55 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c료우기 시키
 call StartSound(BHD("SE\\Ryogi.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CFX takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c쿠치키 뱌쿠야 : |r|cff4FC9DE섬경 :: 천본앵경엄|r")
 call StartSound(BHD("SE\\Byakuya.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CFk takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c타츠마키 : |r|cff4FC9DE그 얘기 재밌어 보이는데? 내가 나설까?|r")
 call StartSound(BHD("SE\\Tatsumaki.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CFv takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c히그마 : |r|cff4FC9DE해적이란 겁쟁이 집단이로군. 똥폼만 잡긴...|r")
 call StartSound(BHD("SE\\Higma.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CF2 takes nothing returns boolean
 local integer JG
-local unit Ys
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+local unit ml_Ys
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c야쿠모 유카리 : |r|cff4FC9DE난 야쿠모 유카리. 이 환상향에선 요괴의 현자라 불리고 있지.|r")
 call StartSound(BHD("SE\\Yukari.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CGE takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if gs[JG]==null then
 set gs[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64230,15 +64230,15 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c콘파쿠 요우
 call StartSound(BHD("SE\\Konpaku.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CGS takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if gx[JG]==null then
 set gx[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64249,32 +64249,32 @@ call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c고죠 사토루
 call StartSound(BHD("SE\\Satoru.mp3",null,127,1.*1.,false,0,0))
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CGh takes nothing returns boolean
 local integer JG
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
-set JG=GetPlayerId(GetOwningPlayer(Ys))
+set ml_Ys=FirstOfGroup(Q6)
+set JG=GetPlayerId(GetOwningPlayer(ml_Ys))
 set Id=GetStartLocationLoc(JG)
 if g2[JG]==null then
 set g2[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
 call UnitAddAbility(g2[JG],$41304F51)
 endif
-set g3=Ys
+set g3=ml_Ys
 call TriggerExecute(g4)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c아냐 포저 : |r|cff4FC9DE스파이? 암살자? 아냐는... 두근두근!|r")
 call StartSound(BHD("SE\\Anya.mp3",null,127,1.*1.,false,0,0))
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPo_CGw takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
+local unit ml_Ys
 local location Id
-set Ys=FirstOfGroup(Q6)
+set ml_Ys=FirstOfGroup(Q6)
 set Id=GetStartLocationLoc(JG)
 if g8[JG]==null then
 set g8[JG]=CreateUnitAtLoc(Player(JG),$68303456,Id,bj_UNIT_FACING)
@@ -64284,19 +64284,19 @@ endif
 set hB[JG]=CreateItemLoc($49303035,GetStartLocationLoc(GetPlayerStartLocation(Player(JG))))
 call SetItemUserData(GetLastCreatedItem(),JG)
 call SetItemCharges(GetLastCreatedItem(),1)
-call UnitAddItemSwapped(hB[JG],Ys)
-call SetPlayerTechResearched(GetOwningPlayer(Ys),$52303051,1)
+call UnitAddItemSwapped(hB[JG],ml_Ys)
+call SetPlayerTechResearched(GetOwningPlayer(ml_Ys),$52303051,1)
 call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,10,"|cffdc143c샌즈 : |r|cff4FC9DE좋아. 여기 더 괜찮은 질문이 있어. 끔찍한 시간을 보내고 싶어?|r")
 call StartSound(BHD("SE\\Sans.mp3",null,127,1.*1.,false,0,0))
 set g9[JG]=true
 call RemoveLocation(Id)
 set Id=null
-set Ys=null
+set ml_Ys=null
 return true
 endfunction
 function MyPr_CGw takes nothing returns boolean
 local integer JG=GetPlayerId(MyCurPlayer)
-local unit Ys
+local unit ml_Ys
 local location Id
 if g9[JG]==true then
 call DisplayTextToPlayer(MyCurPlayer,0,0,"'샌즈 - 신비' 는 한개만 조합할 수 있습니다.")
@@ -64313,7 +64313,7 @@ function MyFu_B7s takes nothing returns boolean
 local player Cl
 local group H1
 local unit Cm
-local integer VL
+local integer ml_VL
 local integer dl=0
 local integer dm=0
 local integer dn=0
@@ -64329,8 +64329,8 @@ set Cm=FirstOfGroup(H1)
 exitwhen Cm==null
 call GroupRemoveUnit(H1,Cm)
 if not dk then
-set VL=GetUnitTypeId(Cm)
-if VL==$48303939 or VL==$48304232 or VL==$48304233 then
+set ml_VL=GetUnitTypeId(Cm)
+if ml_VL==$48303939 or ml_VL==$48304232 or ml_VL==$48304233 then
 set dl=GetHeroStatBJ(bj_HEROSTAT_STR,Cm,false)
 set dm=GetHeroStatBJ(bj_HEROSTAT_AGI,Cm,false)
 set dn=GetHeroStatBJ(bj_HEROSTAT_INT,Cm,false)

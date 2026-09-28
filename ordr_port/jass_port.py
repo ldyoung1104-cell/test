@@ -246,6 +246,23 @@ def port(old_base, old_mod, new_base, log=print):
         if al.new.kind(n):
             report["errors"].append("이름 충돌: 모드가 선언한 '%s' 가 새 버전에도 이미 있음" % n)
 
+    # 모드 함수의 지역변수/인자가 새 버전의 전역·함수 이름과 겹치면 이름을 바꾼다.
+    # (예: 2322 에선 지역변수였던 Ys 가 2323 에선 trigger 전역 -> 맵 로드 실패)
+    namespace = set(al.new.funcs) | set(al.new.globals) | protected
+    mod_local_rename = {}
+    for f in mod_funcs:
+        locs = mod.locals.get(f, {})
+        for n in locs:
+            if n in namespace:
+                k = 0
+                new = "ml_" + n
+                while new in namespace or new in locs:
+                    k += 1
+                    new = "ml%d_%s" % (k, n)
+                mod_local_rename[(f, n)] = new
+    if mod_local_rename:
+        log("전역/함수와 겹치는 모드 지역변수 %d개 이름 변경" % len(mod_local_rename))
+
     def translate(line, func):
         """old_mod 의 한 줄을 새 버전 이름으로 변환."""
         out = []
@@ -255,7 +272,7 @@ def port(old_base, old_mod, new_base, log=print):
             if name in protected:
                 pass
             elif func in mod_funcs and name in mod.locals.get(func, {}):
-                pass  # 모드 함수의 지역변수
+                new = mod_local_rename.get((func, name), name)  # 모드 함수의 지역변수
             elif func and name in base_old.locals.get(func, {}):
                 if (func, name) in al.local_rename:
                     new = al.local_rename[(func, name)]
@@ -316,6 +333,11 @@ def port(old_base, old_mod, new_base, log=print):
             for _, _, n in idents(l):
                 if is_obf(n) and n not in known and not any(n in d for d in res.locals.values()):
                     report["errors"].append("결과에 선언되지 않은 이름: %s  <- %s" % (n, l[:80]))
+    # 모드 함수 지역변수가 전역/함수 이름을 가리면 워크래프트가 맵을 못 불러온다
+    for f in mod_funcs:
+        for n in res.locals.get(f, {}):
+            if n in res.globals or n in res.funcs:
+                report["errors"].append("지역변수가 전역/함수 이름과 겹침: %s.%s" % (f, n))
     report["errors"] = sorted(set(report["errors"]))
     report["warnings"] = sorted(set(report["warnings"]))
     return out, report
