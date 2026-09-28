@@ -2348,6 +2348,7 @@ integer MyListN=0
 integer array MyBkCnt
 integer array MyChipBg
 integer array MyChipTxt
+integer array MyChipLine
 integer MyFltReadyBg=0
 integer MyFltReadyTxt=0
 integer MyFltSortBg=0
@@ -2378,6 +2379,7 @@ integer array MyRowCnt
 integer array MyRowUt
 integer MyCmbBg=0
 integer MyCmbTxt=0
+integer MyCmbFill=0
 integer MyBackBg=0
 integer array MyHist
 integer MyHistN=0
@@ -64871,9 +64873,11 @@ endif
 if myC==MyUiChip then
 call DzFrameSetText(MyChipTxt[myC],"|cffffd700"+myT+"|r")
 call DzFrameSetAlpha(MyChipBg[myC],255)
+call DzFrameShow(MyChipLine[myC],true)
 else
 call DzFrameSetText(MyChipTxt[myC],"|cffb0b0b0"+myT+"|r")
-call DzFrameSetAlpha(MyChipBg[myC],130)
+call DzFrameSetAlpha(MyChipBg[myC],110)
+call DzFrameShow(MyChipLine[myC],false)
 endif
 set myC=myC+1
 endloop
@@ -64924,10 +64928,10 @@ else
 call DzFrameSetText(MyCardOwn[myS],"|cff666666미보유|r")
 endif
 if MyState[myI]==4 then
-call MySetBar(MyCardBar[myS],112.,8.,0)
+call MySetBar(MyCardBar[myS],120.,8.,0)
 else
 call DzFrameSetTexture(MyCardBar[myS],MyBarTex(myI),0)
-call MySetBar(MyCardBar[myS],112.,8.,MyPct[myI])
+call MySetBar(MyCardBar[myS],120.,8.,MyPct[myI])
 endif
 call DzFrameShow(MyCardHi[myS],myI==MyUiSel)
 else
@@ -64976,11 +64980,11 @@ call DzFrameSetText(MyDtName,MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
 call DzFrameSetText(MyDtGrade,MyGradeColor(MyAllGrade[myI])+MyGradeName(MyAllGrade[myI])+"|r |cff888888등급|r")
 call DzFrameSetText(MyDtOwn,"|cff888888보유|r |cffffffff"+I2S(MyOwned(myPid,MyAllType[myI]))+"기|r")
 if MyState[myI]==4 then
-call MySetBar(MyDtBar,404.,16.,0)
+call MySetBar(MyDtBar,420.,18.,0)
 call DzFrameSetText(MyDtPct,"|cffc9a0ff특수 조합|r")
 else
 call DzFrameSetTexture(MyDtBar,MyBarTex(myI),0)
-call MySetBar(MyDtBar,404.,16.,MyPct[myI])
+call MySetBar(MyDtBar,420.,18.,MyPct[myI])
 call DzFrameSetText(MyDtPct,"|cffffffff진행률 "+I2S(MyPct[myI])+"%|r")
 endif
 if MyState[myI]==2 then
@@ -65047,9 +65051,11 @@ set myR=myR+1
 endloop
 if MyState[myI]==2 or MyState[myI]==3 then
 call DzFrameSetAlpha(MyCmbBg,255)
-call DzFrameSetText(MyCmbTxt,"|cffffd700자동조합 실행|r")
+call DzFrameShow(MyCmbFill,true)
+call DzFrameSetText(MyCmbTxt,"|cffffffff자동조합 실행|r")
 else
-call DzFrameSetAlpha(MyCmbBg,120)
+call DzFrameSetAlpha(MyCmbBg,160)
+call DzFrameShow(MyCmbFill,false)
 call DzFrameSetText(MyCmbTxt,"|cff8a8a8a자동조합 실행|r")
 endif
 call DzFrameShow(MyBackBg,MyHistN>0)
@@ -65125,7 +65131,7 @@ function MyUiCardEnter takes nothing returns nothing
 call DzFrameSetAlpha(MyCardBg[LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())],255)
 endfunction
 function MyUiCardLeave takes nothing returns nothing
-call DzFrameSetAlpha(MyCardBg[LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())],215)
+call DzFrameSetAlpha(MyCardBg[LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())],225)
 endfunction
 function MyUiRowClick takes nothing returns nothing
 local integer myR=LoadInteger(MyUiMap,2,DzGetTriggerUIEventFrame())
@@ -65229,115 +65235,125 @@ local integer myS=0
 local integer myR=0
 local real myX
 local real myY
+local string myYel="ReplaceableTextures\\TeamColor\\TeamColor04.blp"
 if MyUiBuilt then
 return
 endif
 call DzLoadToc("war3mapImported\\ORDRTemplates.toc")
 set myG=DzGetGameUI()
 set MyUiRoot=BDu(myG,"MyAcUI root","ORDRTooltipBack")
-call DzFrameSetAbsolutePoint(MyUiRoot,4,.4,.345)
-call MySz(MyUiRoot,1400.,740.)
-set myF=MyBox(MyUiRoot,"ORDRDashBoardPanel",6.,6.,1388.,728.)
-set myT=MyTxt(MyUiRoot,28.,18.,0.,0.,22.,0)
+call DzFrameSetAbsolutePoint(MyUiRoot,4,.4,.328)
+call MySz(MyUiRoot,1400.,620.)
+set myF=MyBox(MyUiRoot,"ORDRDashBoardPanel",4.,4.,1392.,612.)
+set myF=MyBox(MyUiRoot,"ORDRDashBoardPanel",4.,4.,1392.,612.)
+set myT=MyTxt(MyUiRoot,24.,14.,0.,0.,20.,0)
 call DzFrameSetText(myT,"|cffffd700조합 도우미|r")
-set myT=MyTxt(MyUiRoot,200.,26.,0.,0.,12.,0)
-call DzFrameSetText(myT,"|cff8a8a8a[I] 열기/닫기    [Esc] 닫기    카드 클릭 : 상세 보기    재료 클릭 : 하위 조합법|r")
-set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",1296.,16.,80.,32.)
-set myT=MyTxt(myF,0.,0.,80.,32.,13.,18)
+set myT=MyTxt(MyUiRoot,180.,20.,0.,0.,11.,0)
+call DzFrameSetText(myT,"|cff8a8a8a[I] 열기/닫기   [Esc] 닫기   재료 클릭 : 하위 조합법   |r|cff55ff55초록|r|cff8a8a8a 바로 조합   |r|cffffd24a노랑|r|cff8a8a8a 하위 조합으로 가능|r")
+set myF=MyBox(MyUiRoot,"ORDRTooltipBack",1304.,10.,76.,30.)
+set myT=MyTxt(myF,0.,0.,76.,30.,12.,18)
 call DzFrameSetText(myT,"|cffff7070닫기|r")
-set myB=MyBtn(myF,0.,0.,80.,32.,function MyUiCloseClick)
-set myF=MyTex(MyUiRoot,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",28.,60.,1344.,2.)
-call DzFrameSetAlpha(myF,110)
+set myB=MyBtn(myF,0.,0.,76.,30.,function MyUiCloseClick)
+set myF=MyTex(MyUiRoot,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",24.,50.,1352.,2.)
+call DzFrameSetAlpha(myF,90)
 loop
 exitwhen myC>=17
 if myC<9 then
-set myX=28.+I2R(myC)*98.
-set myY=74.
+set myX=24.+I2R(myC)*98.
+set myY=60.
 else
-set myX=28.+I2R(myC-9)*98.
-set myY=108.
+set myX=24.+I2R(myC-9)*98.
+set myY=92.
 endif
-set MyChipBg[myC]=MyBox(MyUiRoot,"ORDRDashBoardBTN",myX,myY,92.,28.)
-set MyChipTxt[myC]=MyTxt(MyChipBg[myC],0.,0.,92.,28.,11.,18)
-set myB=MyBtn(MyChipBg[myC],0.,0.,92.,28.,function MyUiChipClick)
+set MyChipBg[myC]=MyBox(MyUiRoot,"ORDRDashBoardPanelBlack",myX,myY,92.,26.)
+set MyChipTxt[myC]=MyTxt(MyChipBg[myC],0.,0.,92.,26.,11.,18)
+set MyChipLine[myC]=MyTex(MyChipBg[myC],myYel,4.,23.,84.,3.)
+set myB=MyBtn(MyChipBg[myC],0.,0.,92.,26.,function MyUiChipClick)
 call SaveInteger(MyUiMap,1,myB,myC)
 set myC=myC+1
 endloop
-set MyFltReadyBg=MyBox(MyUiRoot,"ORDRDashBoardBTN",28.,146.,170.,28.)
+set MyFltReadyBg=MyBox(MyUiRoot,"ORDRTooltipBack",24.,126.,170.,28.)
 set MyFltReadyTxt=MyTxt(MyFltReadyBg,0.,0.,170.,28.,11.,18)
 set myB=MyBtn(MyFltReadyBg,0.,0.,170.,28.,function MyUiFltReadyClick)
-set MyFltSortBg=MyBox(MyUiRoot,"ORDRDashBoardBTN",206.,146.,170.,28.)
+set MyFltSortBg=MyBox(MyUiRoot,"ORDRTooltipBack",202.,126.,170.,28.)
 set MyFltSortTxt=MyTxt(MyFltSortBg,0.,0.,170.,28.,11.,18)
 set myB=MyBtn(MyFltSortBg,0.,0.,170.,28.,function MyUiFltSortClick)
-set MyCountTxt=MyTxt(MyUiRoot,392.,146.,200.,28.,12.,17)
-set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",726.,146.,44.,28.)
+set MyCountTxt=MyTxt(MyUiRoot,388.,126.,200.,28.,12.,17)
+set myF=MyBox(MyUiRoot,"ORDRTooltipBack",722.,126.,44.,28.)
 set myT=MyTxt(myF,0.,0.,44.,28.,13.,18)
 call DzFrameSetText(myT,"|cffffffff<|r")
 set myB=MyBtn(myF,0.,0.,44.,28.,function MyUiPrevClick)
-set MyPageTxt=MyTxt(MyUiRoot,772.,146.,88.,28.,13.,18)
-set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",862.,146.,44.,28.)
+set MyPageTxt=MyTxt(MyUiRoot,768.,126.,88.,28.,13.,18)
+set myF=MyBox(MyUiRoot,"ORDRTooltipBack",858.,126.,44.,28.)
 set myT=MyTxt(myF,0.,0.,44.,28.,13.,18)
 call DzFrameSetText(myT,"|cffffffff>|r")
 set myB=MyBtn(myF,0.,0.,44.,28.,function MyUiNextClick)
 loop
 exitwhen myS>=20
-set myX=28.+I2R(ModuloInteger(myS,4))*220.
-set myY=186.+I2R(myS/4)*102.
-set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",myX,myY,212.,94.)
-call DzFrameSetAlpha(myF,215)
+set myX=24.+I2R(ModuloInteger(myS,4))*220.
+set myY=164.+I2R(myS/4)*88.
+set myF=MyBox(MyUiRoot,"ORDRTooltipBack",myX,myY,212.,82.)
+call DzFrameSetAlpha(myF,225)
 set MyCardBg[myS]=myF
-set MyCardIcon[myS]=MyTex(myF,"",10.,15.,64.,64.)
-set MyCardHi[myS]=MyTex(myF,"UI\\Widgets\\Console\\Human\\CommandButton\\human-activebutton.blp",4.,9.,76.,76.)
-set MyCardName[myS]=MyTxt(myF,84.,10.,122.,20.,13.,0)
-set MyCardOwn[myS]=MyTxt(myF,84.,32.,122.,16.,11.,0)
-set MyCardStat[myS]=MyTxt(myF,84.,50.,122.,16.,11.,0)
-set myT=MyTex(myF,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",84.,72.,114.,10.)
-call DzFrameSetAlpha(myT,90)
-set MyCardBar[myS]=MyTex(myF,"",85.,73.,112.,8.)
-set myB=MyBtn(myF,0.,0.,212.,94.,function MyUiCardClick)
+set MyCardHi[myS]=BDs(myF,"MyAcUI hi")
+call MyAt(MyCardHi[myS],myF,0.,0.)
+call MySz(MyCardHi[myS],212.,82.)
+set myT=MyTex(MyCardHi[myS],myYel,0.,0.,212.,3.)
+set myT=MyTex(MyCardHi[myS],myYel,0.,79.,212.,3.)
+set myT=MyTex(MyCardHi[myS],myYel,0.,0.,3.,82.)
+set myT=MyTex(MyCardHi[myS],myYel,209.,0.,3.,82.)
+set MyCardIcon[myS]=MyTex(myF,"",10.,11.,60.,60.)
+set MyCardName[myS]=MyTxt(myF,80.,8.,126.,18.,13.,0)
+set MyCardOwn[myS]=MyTxt(myF,80.,28.,126.,15.,11.,0)
+set MyCardStat[myS]=MyTxt(myF,80.,44.,126.,15.,11.,0)
+set myT=MyTex(myF,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",80.,64.,120.,8.)
+call DzFrameSetAlpha(myT,70)
+set MyCardBar[myS]=MyTex(myF,"",80.,64.,120.,8.)
+set myB=MyBtn(myF,0.,0.,212.,82.,function MyUiCardClick)
 call DzFrameSetScriptByCode(myB,2,function MyUiCardEnter,false)
 call DzFrameSetScriptByCode(myB,3,function MyUiCardLeave,false)
 call SaveInteger(MyUiMap,0,myB,myS)
 set MyCardIdx[myS]=-1
 set myS=myS+1
 endloop
-set myF=MyBox(MyUiRoot,"ORDRDashBoardPanelBlack",928.,74.,444.,652.)
-set MyDtEmpty=MyTxt(myF,0.,300.,444.,30.,14.,18)
+set myF=MyBox(MyUiRoot,"ORDRTooltipBack",920.,60.,456.,548.)
+set myT=MyBox(myF,"ORDRDashBoardPanel",3.,3.,450.,542.)
+set MyDtEmpty=MyTxt(myF,0.,260.,456.,30.,14.,18)
 call DzFrameSetText(MyDtEmpty,"|cffaaaaaa왼쪽 목록에서 유닛을 선택하세요.|r")
 set MyDtBody=BDs(myF,"MyAcUI body")
 call MyAt(MyDtBody,myF,0.,0.)
-call MySz(MyDtBody,444.,652.)
-set MyDtIcon=MyTex(MyDtBody,"",18.,18.,88.,88.)
-set MyDtName=MyTxt(MyDtBody,122.,22.,306.,26.,18.,0)
-set MyDtGrade=MyTxt(MyDtBody,122.,54.,306.,18.,12.,0)
-set MyDtOwn=MyTxt(MyDtBody,122.,76.,306.,18.,12.,0)
-set myT=MyTex(MyDtBody,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",18.,122.,408.,20.)
-call DzFrameSetAlpha(myT,90)
-set MyDtBar=MyTex(MyDtBody,"",20.,124.,404.,16.)
-set MyDtPct=MyTxt(MyDtBody,18.,122.,408.,20.,12.,18)
-set MyDtStat=MyTxt(MyDtBody,18.,150.,408.,34.,11.,0)
-set myT=MyTxt(MyDtBody,18.,192.,200.,18.,13.,0)
+call MySz(MyDtBody,456.,548.)
+set MyDtIcon=MyTex(MyDtBody,"",18.,16.,72.,72.)
+set MyDtName=MyTxt(MyDtBody,104.,18.,336.,24.,17.,0)
+set MyDtGrade=MyTxt(MyDtBody,104.,46.,336.,16.,12.,0)
+set MyDtOwn=MyTxt(MyDtBody,104.,66.,336.,16.,12.,0)
+set myT=MyTex(MyDtBody,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",18.,100.,420.,18.)
+call DzFrameSetAlpha(myT,70)
+set MyDtBar=MyTex(MyDtBody,"",18.,100.,420.,18.)
+set MyDtPct=MyTxt(MyDtBody,18.,100.,420.,18.,12.,18)
+set MyDtStat=MyTxt(MyDtBody,18.,124.,420.,30.,11.,0)
+set myT=MyTxt(MyDtBody,18.,162.,200.,18.,13.,0)
 call DzFrameSetText(myT,"|cffffd700필요 조건|r")
-set MyBackBg=MyBox(MyDtBody,"ORDRDashBoardBTN",330.,186.,96.,26.)
+set MyBackBg=MyBox(MyDtBody,"ORDRTooltipBack",342.,156.,96.,26.)
 set myT=MyTxt(MyBackBg,0.,0.,96.,26.,12.,18)
 call DzFrameSetText(myT,"|cffffffff< 뒤로|r")
 set myB=MyBtn(MyBackBg,0.,0.,96.,26.,function MyUiBackClick)
 loop
 exitwhen myR>=10
-set myF=MyBox(MyDtBody,"ORDRDashBoardBTN",18.,218.+I2R(myR)*37.,408.,34.)
+set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*31.,420.,29.)
 set MyRowBg[myR]=myF
-set MyRowIcon[myR]=MyTex(myF,"",4.,3.,28.,28.)
-set MyRowName[myR]=MyTxt(myF,40.,0.,250.,34.,12.,17)
-set MyRowCnt[myR]=MyTxt(myF,284.,0.,116.,34.,12.,20)
-set myB=MyBtn(myF,0.,0.,408.,34.,function MyUiRowClick)
+set MyRowIcon[myR]=MyTex(myF,"",3.,2.,25.,25.)
+set MyRowName[myR]=MyTxt(myF,36.,0.,260.,29.,12.,17)
+set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,29.,12.,20)
+set myB=MyBtn(myF,0.,0.,420.,29.,function MyUiRowClick)
 call SaveInteger(MyUiMap,2,myB,myR)
 set myR=myR+1
 endloop
-set MyCmbBg=MyBox(MyDtBody,"ORDRDashBoardBTN",18.,596.,408.,44.)
-set MyCmbTxt=MyTxt(MyCmbBg,0.,0.,408.,44.,15.,18)
-set myB=MyBtn(MyCmbBg,0.,0.,408.,44.,function MyUiComboClick)
-set myT=MyTxt(MyUiRoot,28.,700.,880.,20.,11.,0)
-call DzFrameSetText(myT,"|cff6f6f6f진행률 : 하위 재료까지 펼친 기본 재료 중 이미 가진 비율    초록 : 바로 조합    노랑 : 하위 조합으로 가능|r")
+set MyCmbBg=MyBox(MyDtBody,"ORDRTooltipBack",18.,496.,420.,40.)
+set MyCmbFill=MyTex(MyCmbBg,"ReplaceableTextures\\TeamColor\\TeamColor06.blp",4.,4.,412.,32.)
+call DzFrameSetAlpha(MyCmbFill,110)
+set MyCmbTxt=MyTxt(MyCmbBg,0.,0.,420.,40.,15.,18)
+set myB=MyBtn(MyCmbBg,0.,0.,420.,40.,function MyUiComboClick)
 call DzFrameShow(MyUiRoot,false)
 set MyUiBuilt=true
 endfunction

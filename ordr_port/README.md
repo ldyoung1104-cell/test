@@ -5,7 +5,7 @@
 - `war3map.j` : 2323 원본 j + 아래 기능
 - `ORDR_S2_2.323[C]_mod.w3x.part0/1` : 완성된 맵 (GitHub 100MB 제한 때문에 분할).
   같은 폴더에서 `join.bat` 실행 → `ORDR_S2_2.323[C]_mod.w3x` 생성
-  (sha256 `027bc7ba1a708db9504016ac96a495bfcbbaf4d5b8d246cb57fbc2d761d56576`)
+  (sha256 `3dd47dd41041a6cb22f173bf2a8e47f7dd00dd55078649bd496162e5c00dd98c`)
 
 ### 들어간 기능 (2322 수정본에서 이식)
 | 기능 | 명령 |
