@@ -2317,31 +2317,70 @@ string array MyAllShort
 string array MyAllIcon
 integer array MyGrpIdx
 integer array MyGrpCnt
-integer MyUiPanel
-integer MyUiDetailIcon
-integer MyUiDetailName
-integer MyUiDetailText
-integer MyUiComboBtn
-integer MyUiComboTxt
-integer MyUiPrevBtn
-integer MyUiNextBtn
-integer MyUiPageTxt
-integer MyUiCloseBtn
-integer array MyUiSlotBg
-integer array MyUiSlotIcon
-integer array MyUiSlotTxt
-integer array MyUiSlotBtn
-integer array MyUiSlotIdx
-integer array MyUiTabBg
-integer array MyUiTabTxt
-integer array MyUiTabBtn
-integer MyUiTab=0
-integer MyUiPage=0
-integer MyUiSel=-1
+integer MyAllCnt=266
+integer MyUiRoot=0
+boolean MyUiBuilt=false
 boolean MyUiShown=false
 boolean MyChatOpen=false
+real MyChatStamp=0.
+timer MyClock
+timer MyUiTick
+integer MyUiTickN=0
 trigger MyKeyTrig
 trigger MyChatCmdTrig
+trigger MyChatAnyTrig
+trigger MyEvalTrig
+integer MyEvalIdx=0
+integer MyEvalPid=0
+integer MyProgSerial=0
+integer array MyStkUt
+integer array MyStkN
+integer array MyPct
+integer array MyState
+boolean array MyResLack
+integer MyUiChip=0
+boolean MyFltReady=false
+boolean MyFltSort=true
+integer MyUiPage=0
+integer MyUiSel=-1
+integer array MyList
+integer MyListN=0
+integer array MyBkCnt
+integer array MyChipBg
+integer array MyChipTxt
+integer MyFltReadyBg=0
+integer MyFltReadyTxt=0
+integer MyFltSortBg=0
+integer MyFltSortTxt=0
+integer MyPageTxt=0
+integer MyCountTxt=0
+integer array MyCardBg
+integer array MyCardHi
+integer array MyCardIcon
+integer array MyCardName
+integer array MyCardStat
+integer array MyCardOwn
+integer array MyCardBar
+integer array MyCardIdx
+integer MyDtBody=0
+integer MyDtEmpty=0
+integer MyDtIcon=0
+integer MyDtName=0
+integer MyDtGrade=0
+integer MyDtOwn=0
+integer MyDtBar=0
+integer MyDtPct=0
+integer MyDtStat=0
+integer array MyRowBg
+integer array MyRowIcon
+integer array MyRowName
+integer array MyRowCnt
+integer array MyRowUt
+integer MyCmbBg=0
+integer MyCmbTxt=0
+integer MyBackBg=0
+integer array MyHist
+integer MyHistN=0
 endglobals
 native DzGetGameUI takes nothing returns integer
 native DzCreateFrame takes string frame,integer parent,integer id returns integer
@@ -64459,158 +64498,855 @@ set mySlot=mySlot+1
 endloop
 return MyRunCraft(myKey)
 endfunction
-function MyUiRefreshGrid takes nothing returns nothing
-local integer mySlot=0
-local integer myPos
-local integer myIdx
+function MyPx takes real myP returns real
+return myP/Kx*Ky
+endfunction
+function MyPy takes real myP returns real
+return myP/Kz*K0
+endfunction
+function MyAt takes integer myF,integer myPar,real myX,real myY returns nothing
+call DzFrameSetPoint(myF,0,myPar,0,MyPx(myX),-MyPy(myY))
+endfunction
+function MySz takes integer myF,real myW,real myH returns nothing
+call DzFrameSetSize(myF,MyPx(myW),MyPy(myH))
+endfunction
+function MyTxt takes integer myPar,real myX,real myY,real myW,real myH,real myFs,integer myAl returns integer
+local integer myF=BD6(myPar,"MyAcUI txt")
+call DzFrameSetFont(myF,"Fonts\\esamanruMedium.ttf",myFs*K3,0)
+call MyAt(myF,myPar,myX,myY)
+if myW>0. then
+call MySz(myF,myW,myH)
+endif
+if myAl>0 then
+call DzFrameSetTextAlignment(myF,myAl)
+endif
+call DzFrameSetEnable(myF,false)
+return myF
+endfunction
+function MyBox takes integer myPar,string myTpl,real myX,real myY,real myW,real myH returns integer
+local integer myF=BDu(myPar,"MyAcUI box",myTpl)
+call MyAt(myF,myPar,myX,myY)
+call MySz(myF,myW,myH)
+return myF
+endfunction
+function MyTex takes integer myPar,string myTex,real myX,real myY,real myW,real myH returns integer
+local integer myF=BDt(myPar,"MyAcUI tex")
+if myTex!="" then
+call DzFrameSetTexture(myF,myTex,0)
+endif
+call MyAt(myF,myPar,myX,myY)
+call MySz(myF,myW,myH)
+return myF
+endfunction
+function MyBtn takes integer myPar,real myX,real myY,real myW,real myH,code myC returns integer
+local integer myF=BDv(myPar,"MyAcUI btn")
+call MyAt(myF,myPar,myX,myY)
+call MySz(myF,myW,myH)
+call DzFrameSetScriptByCode(myF,1,myC,false)
+return myF
+endfunction
+function MyGradeName takes integer myG returns string
+if myG==0 then
+return "안흔함"
+elseif myG==1 then
+return "희귀"
+elseif myG==2 then
+return "특별"
+elseif myG==3 then
+return "전설"
+elseif myG==4 then
+return "히든"
+elseif myG==5 then
+return "초월"
+elseif myG==6 then
+return "불멸"
+elseif myG==7 then
+return "영원"
+elseif myG==8 then
+return "신비"
+elseif myG==9 then
+return "제한"
+elseif myG==10 then
+return "왜곡"
+elseif myG==11 then
+return "변화"
+elseif myG==12 then
+return "특수"
+elseif myG==13 then
+return "세라핌"
+elseif myG==14 then
+return "랜덤전용"
+endif
+return "미분류"
+endfunction
+function MyGradeColor takes integer myG returns string
+if myG==0 then
+return "|cff9553ec"
+elseif myG==1 then
+return "|cffff00ff"
+elseif myG==2 then
+return "|cff0080ff"
+elseif myG==3 then
+return "|cffff3030"
+elseif myG==4 then
+return "|cff6f78ff"
+elseif myG==5 then
+return "|cff00fa9a"
+elseif myG==6 then
+return "|cffe0474f"
+elseif myG==7 then
+return "|cffffd700"
+elseif myG==8 then
+return "|cff51ddf5"
+elseif myG==9 then
+return "|cffdf9d30"
+elseif myG==10 then
+return "|cff9fefd1"
+elseif myG==11 then
+return "|cffff7039"
+elseif myG==12 then
+return "|cffb70fff"
+elseif myG==13 then
+return "|cff00ced1"
+elseif myG==14 then
+return "|cff51ddf5"
+endif
+return "|cffc0c0c0"
+endfunction
+function MyLeaf takes integer myUt,integer myD returns integer
+local integer myK
+local integer myN
+local integer myS=0
 local integer myT=0
-local integer myPages=(MyGrpCnt[MyUiTab]+29)/30
+if HaveSavedInteger(MyUiMap,20,myUt) then
+return LoadInteger(MyUiMap,20,myUt)
+endif
+if myD<10 and HaveSavedInteger(MyKeyMap,myUt,0) then
+set myK=LoadInteger(MyKeyMap,myUt,0)
+set myN=LoadInteger(Wb,myK,We)
+loop
+exitwhen myS>=myN
+if LoadInteger(Wq,myK,myS)==$554E4954 then
+set myT=myT+LoadInteger(Ws,myK,myS)*MyLeaf(LoadInteger(Wr,myK,myS),myD+1)
+endif
+set myS=myS+1
+endloop
+endif
+if myT<=0 then
+set myT=1
+endif
+call SaveInteger(MyUiMap,20,myUt,myT)
+return myT
+endfunction
+function MyRemain takes integer myUt returns integer
+if LoadInteger(MyUiMap,31,myUt)!=MyProgSerial then
+call SaveInteger(MyUiMap,31,myUt,MyProgSerial)
+call SaveInteger(MyUiMap,30,myUt,MyOwned(MyEvalPid,myUt))
+endif
+return LoadInteger(MyUiMap,30,myUt)
+endfunction
+function MyEval takes integer myI returns nothing
+local integer myK=MyAllKey[myI]
+local integer myN=LoadInteger(Wb,myK,We)
+local integer myS=0
+local integer myC
+local integer myM
+local integer myQ
+local integer myTop=0
+local integer myTot=0
+local integer myPr=0
+local integer myOwn
+local integer myUse
+local integer mySk
+local integer mySn
+local integer mySs
+local boolean myDirect=true
+local integer myPid=MyEvalPid
+set MyProgSerial=MyProgSerial+1
+set MyResLack[myI]=false
+loop
+exitwhen myS>=myN
+set myC=LoadInteger(Wq,myK,myS)
+set myM=LoadInteger(Wr,myK,myS)
+set myQ=LoadInteger(Ws,myK,myS)
+if myC==$554E4954 then
+set myTot=myTot+myQ*MyLeaf(myM,0)
+if MyOwned(myPid,myM)<myQ then
+set myDirect=false
+endif
+set MyStkUt[myTop]=myM
+set MyStkN[myTop]=myQ
+set myTop=myTop+1
+elseif myC==$474F4C44 then
+if GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_GOLD)<myQ then
+set MyResLack[myI]=true
+endif
+elseif myC==$574F4F44 then
+if GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_LUMBER)<myQ then
+set MyResLack[myI]=true
+endif
+elseif myC==$49464354 then
+if GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_LUMBER)<myQ+hW[myPid] then
+set MyResLack[myI]=true
+endif
+endif
+set myS=myS+1
+endloop
+loop
+exitwhen myTop<=0
+set myTop=myTop-1
+set myM=MyStkUt[myTop]
+set myQ=MyStkN[myTop]
+set myOwn=MyRemain(myM)
+if myOwn>myQ then
+set myUse=myQ
+else
+set myUse=myOwn
+endif
+call SaveInteger(MyUiMap,30,myM,myOwn-myUse)
+set myPr=myPr+myUse*MyLeaf(myM,0)
+set myQ=myQ-myUse
+if myQ>0 and HaveSavedInteger(MyKeyMap,myM,0) then
+set mySk=LoadInteger(MyKeyMap,myM,0)
+set mySn=LoadInteger(Wb,mySk,We)
+set mySs=0
+loop
+exitwhen mySs>=mySn or myTop>=240
+if LoadInteger(Wq,mySk,mySs)==$554E4954 then
+set MyStkUt[myTop]=LoadInteger(Wr,mySk,mySs)
+set MyStkN[myTop]=LoadInteger(Ws,mySk,mySs)*myQ
+set myTop=myTop+1
+endif
+set mySs=mySs+1
+endloop
+endif
+endloop
+if myTot<=0 then
+set MyPct[myI]=-1
+set MyState[myI]=4
+return
+endif
+if myPr>=myTot then
+set MyPct[myI]=100
+else
+set MyPct[myI]=myPr*100/myTot
+endif
+if MyPct[myI]>=100 then
+if myDirect then
+set MyState[myI]=2
+else
+set MyState[myI]=3
+endif
+else
+set MyState[myI]=1
+endif
+endfunction
+function MyEvalCond takes nothing returns boolean
+call MyEval(MyEvalIdx)
+return false
+endfunction
+function MyEvalRun takes integer myI returns nothing
+set MyEvalIdx=myI
+call TriggerEvaluate(MyEvalTrig)
+endfunction
+function MyStatText takes integer myI returns string
+if MyState[myI]==4 then
+return "|cffc9a0ff특수 조합|r"
+elseif MyState[myI]==2 then
+if MyResLack[myI] then
+return "|cffffa040자원 부족|r"
+endif
+return "|cff55ff55조합 가능|r"
+elseif MyState[myI]==3 then
+return "|cffffd24a하위조합 가능|r"
+endif
+return "|cffbfbfbf"+I2S(MyPct[myI])+"%|r"
+endfunction
+function MyBarTex takes integer myI returns string
+if MyState[myI]==2 then
+return "ReplaceableTextures\\TeamColor\\TeamColor06.blp"
+elseif MyState[myI]==3 then
+return "ReplaceableTextures\\TeamColor\\TeamColor04.blp"
+endif
+return "ReplaceableTextures\\TeamColor\\TeamColor09.blp"
+endfunction
+function MySetBar takes integer myBar,real myW,real myH,integer myPct returns nothing
+if myPct<=0 then
+call DzFrameShow(myBar,false)
+return
+endif
+if myPct>100 then
+set myPct=100
+endif
+call DzFrameShow(myBar,true)
+call MySz(myBar,myW*I2R(myPct)/100.,myH)
+endfunction
+function MyUtIcon takes integer myUt returns string
+local integer myX=LoadInteger(MyUiMap,6,myUt)
+if myX>0 then
+return MyAllIcon[myX-1]
+endif
+if HaveSavedString(MyUiMap,5,myUt) then
+return LoadStr(MyUiMap,5,myUt)
+endif
+return "ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp"
+endfunction
+function MyUtName takes integer myUt returns string
+local integer myX=LoadInteger(MyUiMap,6,myUt)
+if myX>0 then
+return MyGradeColor(MyAllGrade[myX-1])+MyAllShort[myX-1]+"|r"
+endif
+return GetObjectName(myUt)
+endfunction
+function MyCntText takes integer myHave,integer myNeed,boolean myCraft returns string
+if myHave>=myNeed then
+return "|cff55ff55"+I2S(myHave)+" / "+I2S(myNeed)+"|r"
+elseif myCraft then
+return "|cffffd24a"+I2S(myHave)+" / "+I2S(myNeed)+"  (조합)|r"
+endif
+return "|cffff6060"+I2S(myHave)+" / "+I2S(myNeed)+"|r"
+endfunction
+function MyBucket takes integer myI returns integer
+if MyState[myI]==2 then
+return 103
+elseif MyState[myI]==3 then
+return 102
+elseif MyState[myI]==4 then
+return 0
+endif
+return MyPct[myI]+1
+endfunction
+function MyUiBuildList takes nothing returns nothing
+local integer myI=0
+local integer myB=0
+local integer myJ
+set MyListN=0
+loop
+exitwhen myB>103
+set MyBkCnt[myB]=0
+set myB=myB+1
+endloop
+loop
+exitwhen myI>=MyAllCnt
+if MyUiChip==0 or MyAllGrade[myI]==MyUiChip-1 then
+call MyEvalRun(myI)
+if (not MyFltReady) or MyState[myI]==2 or MyState[myI]==3 then
+if MyFltSort then
+set myB=MyBucket(myI)
+call SaveInteger(MyUiMap,40,myB*300+MyBkCnt[myB],myI)
+set MyBkCnt[myB]=MyBkCnt[myB]+1
+else
+set MyList[MyListN]=myI
+set MyListN=MyListN+1
+endif
+endif
+endif
+set myI=myI+1
+endloop
+if MyFltSort then
+set myB=103
+loop
+exitwhen myB<0
+set myJ=0
+loop
+exitwhen myJ>=MyBkCnt[myB]
+set MyList[MyListN]=LoadInteger(MyUiMap,40,myB*300+myJ)
+set MyListN=MyListN+1
+set myJ=myJ+1
+endloop
+set myB=myB-1
+endloop
+endif
+endfunction
+function MyUiRenderChips takes nothing returns nothing
+local integer myC=0
+local string myT
+loop
+exitwhen myC>=17
+if myC==0 then
+set myT="전체"
+else
+set myT=MyGradeName(myC-1)+" |cff777777"+I2S(MyGrpCnt[myC-1])+"|r"
+endif
+if myC==MyUiChip then
+call DzFrameSetText(MyChipTxt[myC],"|cffffd700"+myT+"|r")
+call DzFrameSetAlpha(MyChipBg[myC],255)
+else
+call DzFrameSetText(MyChipTxt[myC],"|cffb0b0b0"+myT+"|r")
+call DzFrameSetAlpha(MyChipBg[myC],130)
+endif
+set myC=myC+1
+endloop
+if MyFltReady then
+call DzFrameSetText(MyFltReadyTxt,"|cff55ff55조합 가능만  ON|r")
+call DzFrameSetAlpha(MyFltReadyBg,255)
+else
+call DzFrameSetText(MyFltReadyTxt,"|cff999999조합 가능만  OFF|r")
+call DzFrameSetAlpha(MyFltReadyBg,130)
+endif
+if MyFltSort then
+call DzFrameSetText(MyFltSortTxt,"|cff55ff55진행률순 정렬  ON|r")
+call DzFrameSetAlpha(MyFltSortBg,255)
+else
+call DzFrameSetText(MyFltSortTxt,"|cff999999진행률순 정렬  OFF|r")
+call DzFrameSetAlpha(MyFltSortBg,130)
+endif
+endfunction
+function MyUiRenderCards takes nothing returns nothing
+local integer myS=0
+local integer myP
+local integer myI
+local integer myOwn
+local integer myPages=(MyListN+19)/20
 if myPages<1 then
 set myPages=1
 endif
 if MyUiPage>=myPages then
 set MyUiPage=myPages-1
 endif
-loop
-exitwhen mySlot>=30
-set myPos=MyUiPage*30+mySlot
-if myPos<MyGrpCnt[MyUiTab] then
-set myIdx=MyGrpIdx[MyUiTab*64+myPos]
-set MyUiSlotIdx[mySlot]=myIdx
-call DzFrameSetTexture(MyUiSlotIcon[mySlot],MyAllIcon[myIdx],0)
-call DzFrameSetText(MyUiSlotTxt[mySlot],MyAllShort[myIdx])
-call DzFrameShow(MyUiSlotBg[mySlot],true)
-else
-set MyUiSlotIdx[mySlot]=-1
-call DzFrameShow(MyUiSlotBg[mySlot],false)
+if MyUiPage<0 then
+set MyUiPage=0
 endif
-set mySlot=mySlot+1
-endloop
 loop
-exitwhen myT>=16
-if myT==MyUiTab then
-call DzFrameSetText(MyUiTabTxt[myT],"|cffffd700"+MyTabName(myT)+"|r")
+exitwhen myS>=20
+set myP=MyUiPage*20+myS
+if myP<MyListN then
+set myI=MyList[myP]
+set MyCardIdx[myS]=myI
+call DzFrameShow(MyCardBg[myS],true)
+call DzFrameSetTexture(MyCardIcon[myS],MyAllIcon[myI],0)
+call DzFrameSetText(MyCardName[myS],MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
+call DzFrameSetText(MyCardStat[myS],MyStatText(myI))
+set myOwn=MyOwned(MyEvalPid,MyAllType[myI])
+if myOwn>0 then
+call DzFrameSetText(MyCardOwn[myS],"|cff9fd3ff보유 "+I2S(myOwn)+"기|r")
 else
-call DzFrameSetText(MyUiTabTxt[myT],"|cffcccccc"+MyTabName(myT)+"|r")
+call DzFrameSetText(MyCardOwn[myS],"|cff666666미보유|r")
 endif
-set myT=myT+1
+if MyState[myI]==4 then
+call MySetBar(MyCardBar[myS],112.,8.,0)
+else
+call DzFrameSetTexture(MyCardBar[myS],MyBarTex(myI),0)
+call MySetBar(MyCardBar[myS],112.,8.,MyPct[myI])
+endif
+call DzFrameShow(MyCardHi[myS],myI==MyUiSel)
+else
+set MyCardIdx[myS]=-1
+call DzFrameShow(MyCardBg[myS],false)
+endif
+set myS=myS+1
 endloop
-call DzFrameSetText(MyUiPageTxt,I2S(MyUiPage+1)+" / "+I2S(myPages))
+call DzFrameSetText(MyPageTxt,"|cffffffff"+I2S(MyUiPage+1)+" / "+I2S(myPages)+"|r")
+call DzFrameSetText(MyCountTxt,"|cff8a8a8a"+I2S(MyListN)+"개 유닛|r")
 endfunction
-function MyUiRefreshDetail takes nothing returns nothing
-local integer myPid=GetPlayerId(GetLocalPlayer())
-local integer myKey
-local integer myCnt
-local integer mySlot=0
-local integer myCode
-local integer myMat
-local integer myNeed
-local integer myHave
-local boolean myOther=false
-local string myLine=""
-if MyUiSel<0 then
-call DzFrameSetText(MyUiDetailName,"|cffffcc00왼쪽 목록에서 유닛을 선택하세요.|r")
-call DzFrameSetText(MyUiDetailText,"")
-call DzFrameSetText(MyUiComboTxt,"자동조합")
-call DzFrameShow(MyUiDetailIcon,false)
+function MyRowSet takes integer myR,string myIcon,string myName,string myCnt,integer myUt returns nothing
+call DzFrameShow(MyRowBg[myR],true)
+call DzFrameSetTexture(MyRowIcon[myR],myIcon,0)
+call DzFrameSetText(MyRowName[myR],myName)
+call DzFrameSetText(MyRowCnt[myR],myCnt)
+set MyRowUt[myR]=myUt
+if LoadInteger(MyUiMap,6,myUt)>0 then
+call DzFrameSetAlpha(MyRowBg[myR],255)
+else
+call DzFrameSetAlpha(MyRowBg[myR],170)
+endif
+endfunction
+function MyUiRenderDetail takes nothing returns nothing
+local integer myI=MyUiSel
+local integer myK
+local integer myN
+local integer myS=0
+local integer myR=0
+local integer myC
+local integer myM
+local integer myQ
+local integer myPid=MyEvalPid
+local string mySc="ReplaceableTextures\\CommandButtons\\BTNSnazzyScroll.blp"
+local string myLb="ReplaceableTextures\\CommandButtons\\BTNBundleOfLumber.blp"
+if myI<0 then
+call DzFrameShow(MyDtBody,false)
+call DzFrameShow(MyDtEmpty,true)
 return
 endif
-call DzFrameShow(MyUiDetailIcon,true)
-call DzFrameSetTexture(MyUiDetailIcon,MyAllIcon[MyUiSel],0)
-call DzFrameSetText(MyUiDetailName,"|cffffd700"+MyAllName[MyUiSel]+"|r")
-set myKey=MyAllKey[MyUiSel]
-set myCnt=LoadInteger(Wb,myKey,We)
-set myLine="|cffaaaaaa필요 재료|r\n"
-loop
-exitwhen mySlot>=myCnt
-set myCode=LoadInteger(Wq,myKey,mySlot)
-set myMat=LoadInteger(Wr,myKey,mySlot)
-set myNeed=LoadInteger(Ws,myKey,mySlot)
-if myCode==$554E4954 then
-set myHave=MyOwned(myPid,myMat)
-if myHave>=myNeed then
-set myLine=myLine+"|cff55ff55"+GetObjectName(myMat)+" "+I2S(myHave)+"/"+I2S(myNeed)+"|r\n"
-elseif HaveSavedInteger(MyKeyMap,myMat,0) then
-set myLine=myLine+"|cffffaa33"+GetObjectName(myMat)+" "+I2S(myHave)+"/"+I2S(myNeed)+" (조합 가능)|r\n"
+call DzFrameShow(MyDtEmpty,false)
+call DzFrameShow(MyDtBody,true)
+call MyEvalRun(myI)
+call DzFrameSetTexture(MyDtIcon,MyAllIcon[myI],0)
+call DzFrameSetText(MyDtName,MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
+call DzFrameSetText(MyDtGrade,MyGradeColor(MyAllGrade[myI])+MyGradeName(MyAllGrade[myI])+"|r |cff888888등급|r")
+call DzFrameSetText(MyDtOwn,"|cff888888보유|r |cffffffff"+I2S(MyOwned(myPid,MyAllType[myI]))+"기|r")
+if MyState[myI]==4 then
+call MySetBar(MyDtBar,404.,16.,0)
+call DzFrameSetText(MyDtPct,"|cffc9a0ff특수 조합|r")
 else
-set myLine=myLine+"|cffff5555"+GetObjectName(myMat)+" "+I2S(myHave)+"/"+I2S(myNeed)+"|r\n"
+call DzFrameSetTexture(MyDtBar,MyBarTex(myI),0)
+call MySetBar(MyDtBar,404.,16.,MyPct[myI])
+call DzFrameSetText(MyDtPct,"|cffffffff진행률 "+I2S(MyPct[myI])+"%|r")
 endif
-elseif myCode==$474F4C44 then
-set myLine=myLine+"|cffffd700골드 "+I2S(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_GOLD))+"/"+I2S(myNeed)+"|r\n"
-elseif myCode==$574F4F44 then
-set myLine=myLine+"|cff7ad823목재 "+I2S(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_LUMBER))+"/"+I2S(myNeed)+"|r\n"
-elseif myCode!=$5550554E and myCode!=$5244554E and myCode!=$53504543 and myCode!=$4752454E then
-set myOther=true
+if MyState[myI]==2 then
+if MyResLack[myI] then
+call DzFrameSetText(MyDtStat,"|cffffa040재료는 모두 있지만 골드/목재가 부족합니다.|r")
+else
+call DzFrameSetText(MyDtStat,"|cff55ff55지금 바로 조합할 수 있습니다.|r")
 endif
-set mySlot=mySlot+1
+elseif MyState[myI]==3 then
+call DzFrameSetText(MyDtStat,"|cffffd24a부족한 재료를 하위 조합으로 채울 수 있습니다. 자동조합을 누르면 순서대로 진행합니다.|r")
+elseif MyState[myI]==4 then
+call DzFrameSetText(MyDtStat,"|cffaaaaaa유닛 재료가 없는 특수 조합입니다. 아래 조건을 확인하세요.|r")
+else
+call DzFrameSetText(MyDtStat,"|cffaaaaaa재료가 더 필요합니다. 노란색 재료는 하위 조합으로 만들 수 있고, 클릭하면 조합법을 볼 수 있습니다.|r")
+endif
+set myK=MyAllKey[myI]
+set myN=LoadInteger(Wb,myK,We)
+loop
+exitwhen myS>=myN or myR>=10
+set myC=LoadInteger(Wq,myK,myS)
+set myM=LoadInteger(Wr,myK,myS)
+set myQ=LoadInteger(Ws,myK,myS)
+if myC==$554E4954 then
+call MyRowSet(myR,MyUtIcon(myM),MyUtName(myM),MyCntText(MyOwned(myPid,myM),myQ,HaveSavedInteger(MyKeyMap,myM,0)),myM)
+set myR=myR+1
+elseif myC==$474F4C44 then
+call MyRowSet(myR,"ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp","|cffffd700골드|r",MyCntText(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_GOLD),myQ,false),0)
+set myR=myR+1
+elseif myC==$574F4F44 then
+call MyRowSet(myR,myLb,"|cff7ad823목재|r",MyCntText(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_LUMBER),myQ,false),0)
+set myR=myR+1
+elseif myC==$49464354 then
+call MyRowSet(myR,myLb,"|cff7ad823목재|r |cff888888(증가분 포함)|r",MyCntText(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_LUMBER),myQ+hW[myPid],false),0)
+set myR=myR+1
+elseif myC==$534B5054 then
+call MyRowSet(myR,mySc,"|cff1e90ff특성포인트|r","|cffffffff"+I2S(myQ)+"|r",0)
+set myR=myR+1
+elseif myC==$4954454D then
+call MyRowSet(myR,mySc,"아이템 : "+GetObjectName(myM),"",0)
+set myR=myR+1
+elseif myC==$5049434B then
+call MyRowSet(myR,mySc,"|cffff4040랜덤전용 유닛 1기|r","",0)
+set myR=myR+1
+elseif myC==$43484354 then
+call MyRowSet(myR,mySc,"|cffff0080변화가능 횟수|r","|cffffffff"+I2S(myQ)+"|r",0)
+set myR=myR+1
+elseif myC==$524D4158 then
+call MyRowSet(myR,mySc,"|cffff4040"+I2S(myQ)+"라운드|r까지만 조합 가능","",0)
+set myR=myR+1
+elseif myC==$53504543 or myC==$5244554E then
+call MyRowSet(myR,mySc,GetAbilityEffectById(myM,EFFECT_TYPE_CASTER,0),"",0)
+set myR=myR+1
+elseif myC==$4752454E then
+call MyRowSet(myR,mySc,"|cffe32bb4그린블러드|r (신모드 이상에서 입수)","",0)
+set myR=myR+1
+endif
+set myS=myS+1
 endloop
-if myOther then
-set myLine=myLine+"\n|cffffcc00그 외 특수 조건이 있습니다. (조합 시 자동 확인)|r"
+loop
+exitwhen myR>=10
+call DzFrameShow(MyRowBg[myR],false)
+set MyRowUt[myR]=0
+set myR=myR+1
+endloop
+if MyState[myI]==2 or MyState[myI]==3 then
+call DzFrameSetAlpha(MyCmbBg,255)
+call DzFrameSetText(MyCmbTxt,"|cffffd700자동조합 실행|r")
+else
+call DzFrameSetAlpha(MyCmbBg,120)
+call DzFrameSetText(MyCmbTxt,"|cff8a8a8a자동조합 실행|r")
 endif
-set myLine=myLine+"\n\n|cff888888주황색 재료는 부족하지만 자동으로 먼저 조합해서 채웁니다.|r"
-call DzFrameSetText(MyUiDetailText,myLine)
-call DzFrameSetText(MyUiComboTxt,"자동조합")
+call DzFrameShow(MyBackBg,MyHistN>0)
 endfunction
-function MyUiTabClick takes nothing returns nothing
-set MyUiTab=LoadInteger(MyUiMap,1,DzGetTriggerUIEventFrame())
+function MyUiRefresh takes boolean myFull returns nothing
+local integer myS=0
+if not MyUiBuilt then
+return
+endif
+set MyEvalPid=GetPlayerId(GetLocalPlayer())
+if myFull then
+call MyUiBuildList()
+else
+loop
+exitwhen myS>=20
+if MyCardIdx[myS]>=0 then
+call MyEvalRun(MyCardIdx[myS])
+endif
+set myS=myS+1
+endloop
+endif
+call MyUiRenderChips()
+call MyUiRenderCards()
+call MyUiRenderDetail()
+endfunction
+function MyUiSetShown takes boolean myB returns nothing
+if not MyUiBuilt then
+return
+endif
+set MyUiShown=myB
+call DzFrameShow(MyUiRoot,myB)
+if myB then
+call MyUiRefresh(true)
+endif
+endfunction
+function MyUiSelect takes integer myI,boolean myKeepHist returns nothing
+if myI<0 then
+return
+endif
+if myKeepHist then
+if MyUiSel>=0 and MyHistN<16 then
+set MyHist[MyHistN]=MyUiSel
+set MyHistN=MyHistN+1
+endif
+else
+set MyHistN=0
+endif
+set MyUiSel=myI
+set MyEvalPid=GetPlayerId(GetLocalPlayer())
+call MyUiRenderCards()
+call MyUiRenderDetail()
+endfunction
+function MyUiChipClick takes nothing returns nothing
+set MyUiChip=LoadInteger(MyUiMap,1,DzGetTriggerUIEventFrame())
 set MyUiPage=0
-call MyUiRefreshGrid()
+call MyUiRefresh(true)
 endfunction
-function MyUiSlotClick takes nothing returns nothing
+function MyUiFltReadyClick takes nothing returns nothing
+set MyFltReady=not MyFltReady
+set MyUiPage=0
+call MyUiRefresh(true)
+endfunction
+function MyUiFltSortClick takes nothing returns nothing
+set MyFltSort=not MyFltSort
+set MyUiPage=0
+call MyUiRefresh(true)
+endfunction
+function MyUiCardClick takes nothing returns nothing
 local integer myS=LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())
-if MyUiSlotIdx[myS]>=0 then
-set MyUiSel=MyUiSlotIdx[myS]
-call MyUiRefreshDetail()
+call MyUiSelect(MyCardIdx[myS],false)
+endfunction
+function MyUiCardEnter takes nothing returns nothing
+call DzFrameSetAlpha(MyCardBg[LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())],255)
+endfunction
+function MyUiCardLeave takes nothing returns nothing
+call DzFrameSetAlpha(MyCardBg[LoadInteger(MyUiMap,0,DzGetTriggerUIEventFrame())],215)
+endfunction
+function MyUiRowClick takes nothing returns nothing
+local integer myR=LoadInteger(MyUiMap,2,DzGetTriggerUIEventFrame())
+local integer myX=LoadInteger(MyUiMap,6,MyRowUt[myR])
+if MyRowUt[myR]!=0 and myX>0 then
+call MyUiSelect(myX-1,true)
+endif
+endfunction
+function MyUiBackClick takes nothing returns nothing
+if MyHistN>0 then
+set MyHistN=MyHistN-1
+set MyUiSel=MyHist[MyHistN]
+set MyEvalPid=GetPlayerId(GetLocalPlayer())
+call MyUiRenderCards()
+call MyUiRenderDetail()
 endif
 endfunction
 function MyUiPrevClick takes nothing returns nothing
 if MyUiPage>0 then
 set MyUiPage=MyUiPage-1
-call MyUiRefreshGrid()
+set MyEvalPid=GetPlayerId(GetLocalPlayer())
+call MyUiRenderCards()
 endif
 endfunction
 function MyUiNextClick takes nothing returns nothing
 set MyUiPage=MyUiPage+1
-call MyUiRefreshGrid()
+set MyEvalPid=GetPlayerId(GetLocalPlayer())
+call MyUiRenderCards()
 endfunction
 function MyUiComboClick takes nothing returns nothing
 if MyUiSel>=0 then
 call DzSyncData("MYAC",I2S(MyAllType[MyUiSel]))
 endif
 endfunction
-function MyUiToggleLocal takes nothing returns nothing
-if MyUiShown then
-set MyUiShown=false
-call DzFrameShow(MyUiPanel,false)
-else
-set MyUiShown=true
-call DzFrameShow(MyUiPanel,true)
-call MyUiRefreshGrid()
-call MyUiRefreshDetail()
-endif
-endfunction
 function MyUiCloseClick takes nothing returns nothing
-if MyUiShown then
-call MyUiToggleLocal()
-endif
+call MyUiSetShown(false)
 endfunction
 function MyUiKeyI takes nothing returns nothing
-if MyChatOpen then
+if DzGetTriggerKeyPlayer()!=GetLocalPlayer() then
 return
 endif
-call MyUiToggleLocal()
+if MyChatOpen and TimerGetElapsed(MyClock)-MyChatStamp<30. then
+return
+endif
+set MyChatOpen=false
+call MyUiSetShown(not MyUiShown)
 endfunction
 function MyUiKeyEnter takes nothing returns nothing
-set MyChatOpen=not MyChatOpen
+if DzGetTriggerKeyPlayer()!=GetLocalPlayer() then
+return
+endif
+if MyChatOpen then
+set MyChatOpen=false
+else
+set MyChatOpen=true
+set MyChatStamp=TimerGetElapsed(MyClock)
+endif
 endfunction
 function MyUiKeyEsc takes nothing returns nothing
+if DzGetTriggerKeyPlayer()!=GetLocalPlayer() then
+return
+endif
+if MyChatOpen then
 set MyChatOpen=false
+return
+endif
+if MyUiShown then
+call MyUiSetShown(false)
+endif
+endfunction
+function MyUiChatAny takes nothing returns nothing
+if GetTriggerPlayer()==GetLocalPlayer() then
+set MyChatOpen=false
+endif
 endfunction
 function MyUiChatCmd takes nothing returns nothing
-if GetLocalPlayer()==GetTriggerPlayer() then
+if GetTriggerPlayer()==GetLocalPlayer() then
 set MyChatOpen=false
-call MyUiToggleLocal()
+call MyUiSetShown(not MyUiShown)
 endif
+endfunction
+function MyUiTickFn takes nothing returns nothing
+if not MyUiShown then
+return
+endif
+set MyUiTickN=MyUiTickN+1
+if MyUiTickN>=4 then
+set MyUiTickN=0
+call MyUiRefresh(true)
+else
+call MyUiRefresh(false)
+endif
+endfunction
+function MyUiBuild takes nothing returns nothing
+local integer myG
+local integer myF
+local integer myT
+local integer myB
+local integer myC=0
+local integer myS=0
+local integer myR=0
+local real myX
+local real myY
+if MyUiBuilt then
+return
+endif
+call DzLoadToc("war3mapImported\\ORDRTemplates.toc")
+set myG=DzGetGameUI()
+set MyUiRoot=BDu(myG,"MyAcUI root","ORDRTooltipBack")
+call DzFrameSetAbsolutePoint(MyUiRoot,4,.4,.345)
+call MySz(MyUiRoot,1400.,740.)
+set myF=MyBox(MyUiRoot,"ORDRDashBoardPanel",6.,6.,1388.,728.)
+set myT=MyTxt(MyUiRoot,28.,18.,0.,0.,22.,0)
+call DzFrameSetText(myT,"|cffffd700조합 도우미|r")
+set myT=MyTxt(MyUiRoot,200.,26.,0.,0.,12.,0)
+call DzFrameSetText(myT,"|cff8a8a8a[I] 열기/닫기    [Esc] 닫기    카드 클릭 : 상세 보기    재료 클릭 : 하위 조합법|r")
+set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",1296.,16.,80.,32.)
+set myT=MyTxt(myF,0.,0.,80.,32.,13.,18)
+call DzFrameSetText(myT,"|cffff7070닫기|r")
+set myB=MyBtn(myF,0.,0.,80.,32.,function MyUiCloseClick)
+set myF=MyTex(MyUiRoot,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",28.,60.,1344.,2.)
+call DzFrameSetAlpha(myF,110)
+loop
+exitwhen myC>=17
+if myC<9 then
+set myX=28.+I2R(myC)*98.
+set myY=74.
+else
+set myX=28.+I2R(myC-9)*98.
+set myY=108.
+endif
+set MyChipBg[myC]=MyBox(MyUiRoot,"ORDRDashBoardBTN",myX,myY,92.,28.)
+set MyChipTxt[myC]=MyTxt(MyChipBg[myC],0.,0.,92.,28.,11.,18)
+set myB=MyBtn(MyChipBg[myC],0.,0.,92.,28.,function MyUiChipClick)
+call SaveInteger(MyUiMap,1,myB,myC)
+set myC=myC+1
+endloop
+set MyFltReadyBg=MyBox(MyUiRoot,"ORDRDashBoardBTN",28.,146.,170.,28.)
+set MyFltReadyTxt=MyTxt(MyFltReadyBg,0.,0.,170.,28.,11.,18)
+set myB=MyBtn(MyFltReadyBg,0.,0.,170.,28.,function MyUiFltReadyClick)
+set MyFltSortBg=MyBox(MyUiRoot,"ORDRDashBoardBTN",206.,146.,170.,28.)
+set MyFltSortTxt=MyTxt(MyFltSortBg,0.,0.,170.,28.,11.,18)
+set myB=MyBtn(MyFltSortBg,0.,0.,170.,28.,function MyUiFltSortClick)
+set MyCountTxt=MyTxt(MyUiRoot,392.,146.,200.,28.,12.,17)
+set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",726.,146.,44.,28.)
+set myT=MyTxt(myF,0.,0.,44.,28.,13.,18)
+call DzFrameSetText(myT,"|cffffffff<|r")
+set myB=MyBtn(myF,0.,0.,44.,28.,function MyUiPrevClick)
+set MyPageTxt=MyTxt(MyUiRoot,772.,146.,88.,28.,13.,18)
+set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",862.,146.,44.,28.)
+set myT=MyTxt(myF,0.,0.,44.,28.,13.,18)
+call DzFrameSetText(myT,"|cffffffff>|r")
+set myB=MyBtn(myF,0.,0.,44.,28.,function MyUiNextClick)
+loop
+exitwhen myS>=20
+set myX=28.+I2R(ModuloInteger(myS,4))*220.
+set myY=186.+I2R(myS/4)*102.
+set myF=MyBox(MyUiRoot,"ORDRDashBoardBTN",myX,myY,212.,94.)
+call DzFrameSetAlpha(myF,215)
+set MyCardBg[myS]=myF
+set MyCardIcon[myS]=MyTex(myF,"",10.,15.,64.,64.)
+set MyCardHi[myS]=MyTex(myF,"UI\\Widgets\\Console\\Human\\CommandButton\\human-activebutton.blp",4.,9.,76.,76.)
+set MyCardName[myS]=MyTxt(myF,84.,10.,122.,20.,13.,0)
+set MyCardOwn[myS]=MyTxt(myF,84.,32.,122.,16.,11.,0)
+set MyCardStat[myS]=MyTxt(myF,84.,50.,122.,16.,11.,0)
+set myT=MyTex(myF,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",84.,72.,114.,10.)
+call DzFrameSetAlpha(myT,90)
+set MyCardBar[myS]=MyTex(myF,"",85.,73.,112.,8.)
+set myB=MyBtn(myF,0.,0.,212.,94.,function MyUiCardClick)
+call DzFrameSetScriptByCode(myB,2,function MyUiCardEnter,false)
+call DzFrameSetScriptByCode(myB,3,function MyUiCardLeave,false)
+call SaveInteger(MyUiMap,0,myB,myS)
+set MyCardIdx[myS]=-1
+set myS=myS+1
+endloop
+set myF=MyBox(MyUiRoot,"ORDRDashBoardPanelBlack",928.,74.,444.,652.)
+set MyDtEmpty=MyTxt(myF,0.,300.,444.,30.,14.,18)
+call DzFrameSetText(MyDtEmpty,"|cffaaaaaa왼쪽 목록에서 유닛을 선택하세요.|r")
+set MyDtBody=BDs(myF,"MyAcUI body")
+call MyAt(MyDtBody,myF,0.,0.)
+call MySz(MyDtBody,444.,652.)
+set MyDtIcon=MyTex(MyDtBody,"",18.,18.,88.,88.)
+set MyDtName=MyTxt(MyDtBody,122.,22.,306.,26.,18.,0)
+set MyDtGrade=MyTxt(MyDtBody,122.,54.,306.,18.,12.,0)
+set MyDtOwn=MyTxt(MyDtBody,122.,76.,306.,18.,12.,0)
+set myT=MyTex(MyDtBody,"ReplaceableTextures\\TeamColor\\TeamColor08.blp",18.,122.,408.,20.)
+call DzFrameSetAlpha(myT,90)
+set MyDtBar=MyTex(MyDtBody,"",20.,124.,404.,16.)
+set MyDtPct=MyTxt(MyDtBody,18.,122.,408.,20.,12.,18)
+set MyDtStat=MyTxt(MyDtBody,18.,150.,408.,34.,11.,0)
+set myT=MyTxt(MyDtBody,18.,192.,200.,18.,13.,0)
+call DzFrameSetText(myT,"|cffffd700필요 조건|r")
+set MyBackBg=MyBox(MyDtBody,"ORDRDashBoardBTN",330.,186.,96.,26.)
+set myT=MyTxt(MyBackBg,0.,0.,96.,26.,12.,18)
+call DzFrameSetText(myT,"|cffffffff< 뒤로|r")
+set myB=MyBtn(MyBackBg,0.,0.,96.,26.,function MyUiBackClick)
+loop
+exitwhen myR>=10
+set myF=MyBox(MyDtBody,"ORDRDashBoardBTN",18.,218.+I2R(myR)*37.,408.,34.)
+set MyRowBg[myR]=myF
+set MyRowIcon[myR]=MyTex(myF,"",4.,3.,28.,28.)
+set MyRowName[myR]=MyTxt(myF,40.,0.,250.,34.,12.,17)
+set MyRowCnt[myR]=MyTxt(myF,284.,0.,116.,34.,12.,20)
+set myB=MyBtn(myF,0.,0.,408.,34.,function MyUiRowClick)
+call SaveInteger(MyUiMap,2,myB,myR)
+set myR=myR+1
+endloop
+set MyCmbBg=MyBox(MyDtBody,"ORDRDashBoardBTN",18.,596.,408.,44.)
+set MyCmbTxt=MyTxt(MyCmbBg,0.,0.,408.,44.,15.,18)
+set myB=MyBtn(MyCmbBg,0.,0.,408.,44.,function MyUiComboClick)
+set myT=MyTxt(MyUiRoot,28.,700.,880.,20.,11.,0)
+call DzFrameSetText(myT,"|cff6f6f6f진행률 : 하위 재료까지 펼친 기본 재료 중 이미 가진 비율    초록 : 바로 조합    노랑 : 하위 조합으로 가능|r")
+call DzFrameShow(MyUiRoot,false)
+set MyUiBuilt=true
+endfunction
+function MyUiBoot takes nothing returns nothing
+call MyUiBuild()
+call DzTriggerRegisterKeyEventByCode(MyKeyTrig,73,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyI)
+call DzTriggerRegisterKeyEventByCode(MyKeyTrig,13,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyEnter)
+call DzTriggerRegisterKeyEventByCode(MyKeyTrig,27,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyEsc)
+call DestroyTimer(GetExpiredTimer())
 endfunction
 function MyAcSync takes nothing returns nothing
 local integer myUt=S2I(DzGetTriggerSyncData())
@@ -64620,8 +65356,8 @@ call DisplayTimedTextToPlayer(MyCurPlayer,0,0,6,"|cff00ff00[자동조합]|r 조�
 else
 call DisplayTimedTextToPlayer(MyCurPlayer,0,0,6,"|cffff0000[자동조합]|r 조합할 수 없습니다. (재료 또는 조건 부족)")
 endif
-if GetLocalPlayer()==MyCurPlayer then
-call MyUiRefreshDetail()
+if GetLocalPlayer()==MyCurPlayer and MyUiShown then
+call MyUiRefresh(true)
 endif
 endfunction
 function MyInitData takes nothing returns nothing
@@ -66706,851 +67442,47 @@ call SaveStr(MyFxMap,3,$41314343,"|cffFF0000히바리 : |r|cffFA8072지도 코�
 call SaveStr(MyFxMap,3,$41313133,"|cffFF0000샬롯 브륄레 : |r|cffFA8072예쁜 얼굴을 보면 갈기갈기 찢어버리고 싶다니까!|r")
 endfunction
 function MyInitUi takes nothing returns nothing
-local integer myGame=DzGetGameUI()
 local integer myI=0
-call DzLoadToc("war3mapImported\\ORDRTemplates.toc")
-set MyUiPanel=BDt(myGame,"MyAcUI panel")
-call DzFrameSetTexture(MyUiPanel,"Interface\\DashBoard_BackGround.tga",0)
-call DzFrameSetSize(MyUiPanel,1300.*1./Kx*Ky,610.*1./Kz*K0)
-call DzFrameSetPoint(MyUiPanel,K4,myGame,K4,-160.*1./Kx*Ky,-(-80.*1.)/Kz*K0)
-call DzFrameShow(MyUiPanel,false)
-set myI=BD6(MyUiPanel,"MyAcUI title")
-call DzFrameSetFont(myI,"Fonts\\esamanruMedium.ttf",18*1.*K3,0)
-call DzFrameSetPoint(myI,0,MyUiPanel,0,18.*1./Kx*Ky,-(10.*1.)/Kz*K0)
-call DzFrameSetText(myI,"|cffffd700조합 도우미|r  |cffaaaaaa(I 키로 열고 닫기 / 부족한 재료는 자동으로 먼저 조합)|r")
-call DzFrameSetEnable(myI,false)
-set MyUiCloseBtn=BDx(MyUiPanel,"MyAcUI close")
-call DzFrameSetSize(MyUiCloseBtn,44.*1./Kx*Ky,28.*1./Kz*K0)
-call DzFrameSetPoint(MyUiCloseBtn,0,MyUiPanel,0,1245.*1./Kx*Ky,-(8.*1.)/Kz*K0)
-set myI=BD6(MyUiCloseBtn,"MyAcUI closetxt")
-call DzFrameSetFont(myI,"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(myI,0,MyUiCloseBtn,0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(myI,"|cffff5555닫기|r")
-call DzFrameSetEnable(myI,false)
-call DzFrameSetScriptByCode(MyUiCloseBtn,1,function MyUiCloseClick,false)
-set MyUiTabBg[0]=BDt(MyUiPanel,"MyAcUI tabbg0")
-call DzFrameSetSize(MyUiTabBg[0],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[0],0,MyUiPanel,0,15.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[0],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[0]=BD6(MyUiTabBg[0],"MyAcUI tabtxt0")
-call DzFrameSetFont(MyUiTabTxt[0],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[0],0,MyUiTabBg[0],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[0],MyTabName(0))
-call DzFrameSetEnable(MyUiTabTxt[0],false)
-set MyUiTabBtn[0]=BDx(MyUiTabBg[0],"MyAcUI tabbtn0")
-call DzFrameSetSize(MyUiTabBtn[0],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[0],0,MyUiTabBg[0],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[0],0)
-call DzFrameSetScriptByCode(MyUiTabBtn[0],1,function MyUiTabClick,false)
-set MyUiTabBg[1]=BDt(MyUiPanel,"MyAcUI tabbg1")
-call DzFrameSetSize(MyUiTabBg[1],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[1],0,MyUiPanel,0,170.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[1],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[1]=BD6(MyUiTabBg[1],"MyAcUI tabtxt1")
-call DzFrameSetFont(MyUiTabTxt[1],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[1],0,MyUiTabBg[1],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[1],MyTabName(1))
-call DzFrameSetEnable(MyUiTabTxt[1],false)
-set MyUiTabBtn[1]=BDx(MyUiTabBg[1],"MyAcUI tabbtn1")
-call DzFrameSetSize(MyUiTabBtn[1],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[1],0,MyUiTabBg[1],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[1],1)
-call DzFrameSetScriptByCode(MyUiTabBtn[1],1,function MyUiTabClick,false)
-set MyUiTabBg[2]=BDt(MyUiPanel,"MyAcUI tabbg2")
-call DzFrameSetSize(MyUiTabBg[2],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[2],0,MyUiPanel,0,325.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[2],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[2]=BD6(MyUiTabBg[2],"MyAcUI tabtxt2")
-call DzFrameSetFont(MyUiTabTxt[2],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[2],0,MyUiTabBg[2],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[2],MyTabName(2))
-call DzFrameSetEnable(MyUiTabTxt[2],false)
-set MyUiTabBtn[2]=BDx(MyUiTabBg[2],"MyAcUI tabbtn2")
-call DzFrameSetSize(MyUiTabBtn[2],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[2],0,MyUiTabBg[2],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[2],2)
-call DzFrameSetScriptByCode(MyUiTabBtn[2],1,function MyUiTabClick,false)
-set MyUiTabBg[3]=BDt(MyUiPanel,"MyAcUI tabbg3")
-call DzFrameSetSize(MyUiTabBg[3],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[3],0,MyUiPanel,0,480.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[3],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[3]=BD6(MyUiTabBg[3],"MyAcUI tabtxt3")
-call DzFrameSetFont(MyUiTabTxt[3],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[3],0,MyUiTabBg[3],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[3],MyTabName(3))
-call DzFrameSetEnable(MyUiTabTxt[3],false)
-set MyUiTabBtn[3]=BDx(MyUiTabBg[3],"MyAcUI tabbtn3")
-call DzFrameSetSize(MyUiTabBtn[3],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[3],0,MyUiTabBg[3],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[3],3)
-call DzFrameSetScriptByCode(MyUiTabBtn[3],1,function MyUiTabClick,false)
-set MyUiTabBg[4]=BDt(MyUiPanel,"MyAcUI tabbg4")
-call DzFrameSetSize(MyUiTabBg[4],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[4],0,MyUiPanel,0,635.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[4],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[4]=BD6(MyUiTabBg[4],"MyAcUI tabtxt4")
-call DzFrameSetFont(MyUiTabTxt[4],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[4],0,MyUiTabBg[4],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[4],MyTabName(4))
-call DzFrameSetEnable(MyUiTabTxt[4],false)
-set MyUiTabBtn[4]=BDx(MyUiTabBg[4],"MyAcUI tabbtn4")
-call DzFrameSetSize(MyUiTabBtn[4],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[4],0,MyUiTabBg[4],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[4],4)
-call DzFrameSetScriptByCode(MyUiTabBtn[4],1,function MyUiTabClick,false)
-set MyUiTabBg[5]=BDt(MyUiPanel,"MyAcUI tabbg5")
-call DzFrameSetSize(MyUiTabBg[5],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[5],0,MyUiPanel,0,790.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[5],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[5]=BD6(MyUiTabBg[5],"MyAcUI tabtxt5")
-call DzFrameSetFont(MyUiTabTxt[5],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[5],0,MyUiTabBg[5],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[5],MyTabName(5))
-call DzFrameSetEnable(MyUiTabTxt[5],false)
-set MyUiTabBtn[5]=BDx(MyUiTabBg[5],"MyAcUI tabbtn5")
-call DzFrameSetSize(MyUiTabBtn[5],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[5],0,MyUiTabBg[5],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[5],5)
-call DzFrameSetScriptByCode(MyUiTabBtn[5],1,function MyUiTabClick,false)
-set MyUiTabBg[6]=BDt(MyUiPanel,"MyAcUI tabbg6")
-call DzFrameSetSize(MyUiTabBg[6],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[6],0,MyUiPanel,0,945.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[6],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[6]=BD6(MyUiTabBg[6],"MyAcUI tabtxt6")
-call DzFrameSetFont(MyUiTabTxt[6],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[6],0,MyUiTabBg[6],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[6],MyTabName(6))
-call DzFrameSetEnable(MyUiTabTxt[6],false)
-set MyUiTabBtn[6]=BDx(MyUiTabBg[6],"MyAcUI tabbtn6")
-call DzFrameSetSize(MyUiTabBtn[6],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[6],0,MyUiTabBg[6],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[6],6)
-call DzFrameSetScriptByCode(MyUiTabBtn[6],1,function MyUiTabClick,false)
-set MyUiTabBg[7]=BDt(MyUiPanel,"MyAcUI tabbg7")
-call DzFrameSetSize(MyUiTabBg[7],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[7],0,MyUiPanel,0,1100.*1./Kx*Ky,-(44.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[7],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[7]=BD6(MyUiTabBg[7],"MyAcUI tabtxt7")
-call DzFrameSetFont(MyUiTabTxt[7],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[7],0,MyUiTabBg[7],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[7],MyTabName(7))
-call DzFrameSetEnable(MyUiTabTxt[7],false)
-set MyUiTabBtn[7]=BDx(MyUiTabBg[7],"MyAcUI tabbtn7")
-call DzFrameSetSize(MyUiTabBtn[7],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[7],0,MyUiTabBg[7],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[7],7)
-call DzFrameSetScriptByCode(MyUiTabBtn[7],1,function MyUiTabClick,false)
-set MyUiTabBg[8]=BDt(MyUiPanel,"MyAcUI tabbg8")
-call DzFrameSetSize(MyUiTabBg[8],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[8],0,MyUiPanel,0,15.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[8],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[8]=BD6(MyUiTabBg[8],"MyAcUI tabtxt8")
-call DzFrameSetFont(MyUiTabTxt[8],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[8],0,MyUiTabBg[8],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[8],MyTabName(8))
-call DzFrameSetEnable(MyUiTabTxt[8],false)
-set MyUiTabBtn[8]=BDx(MyUiTabBg[8],"MyAcUI tabbtn8")
-call DzFrameSetSize(MyUiTabBtn[8],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[8],0,MyUiTabBg[8],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[8],8)
-call DzFrameSetScriptByCode(MyUiTabBtn[8],1,function MyUiTabClick,false)
-set MyUiTabBg[9]=BDt(MyUiPanel,"MyAcUI tabbg9")
-call DzFrameSetSize(MyUiTabBg[9],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[9],0,MyUiPanel,0,170.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[9],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[9]=BD6(MyUiTabBg[9],"MyAcUI tabtxt9")
-call DzFrameSetFont(MyUiTabTxt[9],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[9],0,MyUiTabBg[9],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[9],MyTabName(9))
-call DzFrameSetEnable(MyUiTabTxt[9],false)
-set MyUiTabBtn[9]=BDx(MyUiTabBg[9],"MyAcUI tabbtn9")
-call DzFrameSetSize(MyUiTabBtn[9],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[9],0,MyUiTabBg[9],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[9],9)
-call DzFrameSetScriptByCode(MyUiTabBtn[9],1,function MyUiTabClick,false)
-set MyUiTabBg[10]=BDt(MyUiPanel,"MyAcUI tabbg10")
-call DzFrameSetSize(MyUiTabBg[10],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[10],0,MyUiPanel,0,325.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[10],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[10]=BD6(MyUiTabBg[10],"MyAcUI tabtxt10")
-call DzFrameSetFont(MyUiTabTxt[10],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[10],0,MyUiTabBg[10],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[10],MyTabName(10))
-call DzFrameSetEnable(MyUiTabTxt[10],false)
-set MyUiTabBtn[10]=BDx(MyUiTabBg[10],"MyAcUI tabbtn10")
-call DzFrameSetSize(MyUiTabBtn[10],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[10],0,MyUiTabBg[10],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[10],10)
-call DzFrameSetScriptByCode(MyUiTabBtn[10],1,function MyUiTabClick,false)
-set MyUiTabBg[11]=BDt(MyUiPanel,"MyAcUI tabbg11")
-call DzFrameSetSize(MyUiTabBg[11],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[11],0,MyUiPanel,0,480.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[11],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[11]=BD6(MyUiTabBg[11],"MyAcUI tabtxt11")
-call DzFrameSetFont(MyUiTabTxt[11],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[11],0,MyUiTabBg[11],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[11],MyTabName(11))
-call DzFrameSetEnable(MyUiTabTxt[11],false)
-set MyUiTabBtn[11]=BDx(MyUiTabBg[11],"MyAcUI tabbtn11")
-call DzFrameSetSize(MyUiTabBtn[11],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[11],0,MyUiTabBg[11],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[11],11)
-call DzFrameSetScriptByCode(MyUiTabBtn[11],1,function MyUiTabClick,false)
-set MyUiTabBg[12]=BDt(MyUiPanel,"MyAcUI tabbg12")
-call DzFrameSetSize(MyUiTabBg[12],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[12],0,MyUiPanel,0,635.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[12],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[12]=BD6(MyUiTabBg[12],"MyAcUI tabtxt12")
-call DzFrameSetFont(MyUiTabTxt[12],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[12],0,MyUiTabBg[12],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[12],MyTabName(12))
-call DzFrameSetEnable(MyUiTabTxt[12],false)
-set MyUiTabBtn[12]=BDx(MyUiTabBg[12],"MyAcUI tabbtn12")
-call DzFrameSetSize(MyUiTabBtn[12],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[12],0,MyUiTabBg[12],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[12],12)
-call DzFrameSetScriptByCode(MyUiTabBtn[12],1,function MyUiTabClick,false)
-set MyUiTabBg[13]=BDt(MyUiPanel,"MyAcUI tabbg13")
-call DzFrameSetSize(MyUiTabBg[13],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[13],0,MyUiPanel,0,790.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[13],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[13]=BD6(MyUiTabBg[13],"MyAcUI tabtxt13")
-call DzFrameSetFont(MyUiTabTxt[13],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[13],0,MyUiTabBg[13],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[13],MyTabName(13))
-call DzFrameSetEnable(MyUiTabTxt[13],false)
-set MyUiTabBtn[13]=BDx(MyUiTabBg[13],"MyAcUI tabbtn13")
-call DzFrameSetSize(MyUiTabBtn[13],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[13],0,MyUiTabBg[13],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[13],13)
-call DzFrameSetScriptByCode(MyUiTabBtn[13],1,function MyUiTabClick,false)
-set MyUiTabBg[14]=BDt(MyUiPanel,"MyAcUI tabbg14")
-call DzFrameSetSize(MyUiTabBg[14],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[14],0,MyUiPanel,0,945.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[14],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[14]=BD6(MyUiTabBg[14],"MyAcUI tabtxt14")
-call DzFrameSetFont(MyUiTabTxt[14],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[14],0,MyUiTabBg[14],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[14],MyTabName(14))
-call DzFrameSetEnable(MyUiTabTxt[14],false)
-set MyUiTabBtn[14]=BDx(MyUiTabBg[14],"MyAcUI tabbtn14")
-call DzFrameSetSize(MyUiTabBtn[14],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[14],0,MyUiTabBg[14],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[14],14)
-call DzFrameSetScriptByCode(MyUiTabBtn[14],1,function MyUiTabClick,false)
-set MyUiTabBg[15]=BDt(MyUiPanel,"MyAcUI tabbg15")
-call DzFrameSetSize(MyUiTabBg[15],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBg[15],0,MyUiPanel,0,1100.*1./Kx*Ky,-(76.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiTabBg[15],"Interface\\BlackBackGround.tga",0)
-set MyUiTabTxt[15]=BD6(MyUiTabBg[15],"MyAcUI tabtxt15")
-call DzFrameSetFont(MyUiTabTxt[15],"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiTabTxt[15],0,MyUiTabBg[15],0,10.*1./Kx*Ky,-(6.*1.)/Kz*K0)
-call DzFrameSetText(MyUiTabTxt[15],MyTabName(15))
-call DzFrameSetEnable(MyUiTabTxt[15],false)
-set MyUiTabBtn[15]=BDx(MyUiTabBg[15],"MyAcUI tabbtn15")
-call DzFrameSetSize(MyUiTabBtn[15],150.*1./Kx*Ky,29.*1./Kz*K0)
-call DzFrameSetPoint(MyUiTabBtn[15],0,MyUiTabBg[15],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,1,MyUiTabBtn[15],15)
-call DzFrameSetScriptByCode(MyUiTabBtn[15],1,function MyUiTabClick,false)
-set MyUiSlotBg[0]=BDt(MyUiPanel,"MyAcUI slotbg0")
-call DzFrameSetSize(MyUiSlotBg[0],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[0],0,MyUiPanel,0,15.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[0],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[0]=BDt(MyUiSlotBg[0],"MyAcUI slotico0")
-call DzFrameSetSize(MyUiSlotIcon[0],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[0],0,MyUiSlotBg[0],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[0]=BD6(MyUiSlotBg[0],"MyAcUI slottxt0")
-call DzFrameSetSize(MyUiSlotTxt[0],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[0],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[0],0,MyUiSlotBg[0],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[0],false)
-set MyUiSlotBtn[0]=BDx(MyUiSlotBg[0],"MyAcUI slotbtn0")
-call DzFrameSetSize(MyUiSlotBtn[0],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[0],0,MyUiSlotBg[0],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[0],0)
-call DzFrameSetScriptByCode(MyUiSlotBtn[0],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[0]=-1
-set MyUiSlotBg[1]=BDt(MyUiPanel,"MyAcUI slotbg1")
-call DzFrameSetSize(MyUiSlotBg[1],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[1],0,MyUiPanel,0,120.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[1],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[1]=BDt(MyUiSlotBg[1],"MyAcUI slotico1")
-call DzFrameSetSize(MyUiSlotIcon[1],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[1],0,MyUiSlotBg[1],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[1]=BD6(MyUiSlotBg[1],"MyAcUI slottxt1")
-call DzFrameSetSize(MyUiSlotTxt[1],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[1],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[1],0,MyUiSlotBg[1],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[1],false)
-set MyUiSlotBtn[1]=BDx(MyUiSlotBg[1],"MyAcUI slotbtn1")
-call DzFrameSetSize(MyUiSlotBtn[1],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[1],0,MyUiSlotBg[1],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[1],1)
-call DzFrameSetScriptByCode(MyUiSlotBtn[1],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[1]=-1
-set MyUiSlotBg[2]=BDt(MyUiPanel,"MyAcUI slotbg2")
-call DzFrameSetSize(MyUiSlotBg[2],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[2],0,MyUiPanel,0,225.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[2],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[2]=BDt(MyUiSlotBg[2],"MyAcUI slotico2")
-call DzFrameSetSize(MyUiSlotIcon[2],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[2],0,MyUiSlotBg[2],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[2]=BD6(MyUiSlotBg[2],"MyAcUI slottxt2")
-call DzFrameSetSize(MyUiSlotTxt[2],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[2],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[2],0,MyUiSlotBg[2],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[2],false)
-set MyUiSlotBtn[2]=BDx(MyUiSlotBg[2],"MyAcUI slotbtn2")
-call DzFrameSetSize(MyUiSlotBtn[2],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[2],0,MyUiSlotBg[2],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[2],2)
-call DzFrameSetScriptByCode(MyUiSlotBtn[2],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[2]=-1
-set MyUiSlotBg[3]=BDt(MyUiPanel,"MyAcUI slotbg3")
-call DzFrameSetSize(MyUiSlotBg[3],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[3],0,MyUiPanel,0,330.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[3],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[3]=BDt(MyUiSlotBg[3],"MyAcUI slotico3")
-call DzFrameSetSize(MyUiSlotIcon[3],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[3],0,MyUiSlotBg[3],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[3]=BD6(MyUiSlotBg[3],"MyAcUI slottxt3")
-call DzFrameSetSize(MyUiSlotTxt[3],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[3],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[3],0,MyUiSlotBg[3],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[3],false)
-set MyUiSlotBtn[3]=BDx(MyUiSlotBg[3],"MyAcUI slotbtn3")
-call DzFrameSetSize(MyUiSlotBtn[3],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[3],0,MyUiSlotBg[3],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[3],3)
-call DzFrameSetScriptByCode(MyUiSlotBtn[3],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[3]=-1
-set MyUiSlotBg[4]=BDt(MyUiPanel,"MyAcUI slotbg4")
-call DzFrameSetSize(MyUiSlotBg[4],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[4],0,MyUiPanel,0,435.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[4],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[4]=BDt(MyUiSlotBg[4],"MyAcUI slotico4")
-call DzFrameSetSize(MyUiSlotIcon[4],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[4],0,MyUiSlotBg[4],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[4]=BD6(MyUiSlotBg[4],"MyAcUI slottxt4")
-call DzFrameSetSize(MyUiSlotTxt[4],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[4],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[4],0,MyUiSlotBg[4],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[4],false)
-set MyUiSlotBtn[4]=BDx(MyUiSlotBg[4],"MyAcUI slotbtn4")
-call DzFrameSetSize(MyUiSlotBtn[4],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[4],0,MyUiSlotBg[4],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[4],4)
-call DzFrameSetScriptByCode(MyUiSlotBtn[4],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[4]=-1
-set MyUiSlotBg[5]=BDt(MyUiPanel,"MyAcUI slotbg5")
-call DzFrameSetSize(MyUiSlotBg[5],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[5],0,MyUiPanel,0,540.*1./Kx*Ky,-(116.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[5],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[5]=BDt(MyUiSlotBg[5],"MyAcUI slotico5")
-call DzFrameSetSize(MyUiSlotIcon[5],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[5],0,MyUiSlotBg[5],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[5]=BD6(MyUiSlotBg[5],"MyAcUI slottxt5")
-call DzFrameSetSize(MyUiSlotTxt[5],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[5],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[5],0,MyUiSlotBg[5],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[5],false)
-set MyUiSlotBtn[5]=BDx(MyUiSlotBg[5],"MyAcUI slotbtn5")
-call DzFrameSetSize(MyUiSlotBtn[5],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[5],0,MyUiSlotBg[5],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[5],5)
-call DzFrameSetScriptByCode(MyUiSlotBtn[5],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[5]=-1
-set MyUiSlotBg[6]=BDt(MyUiPanel,"MyAcUI slotbg6")
-call DzFrameSetSize(MyUiSlotBg[6],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[6],0,MyUiPanel,0,15.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[6],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[6]=BDt(MyUiSlotBg[6],"MyAcUI slotico6")
-call DzFrameSetSize(MyUiSlotIcon[6],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[6],0,MyUiSlotBg[6],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[6]=BD6(MyUiSlotBg[6],"MyAcUI slottxt6")
-call DzFrameSetSize(MyUiSlotTxt[6],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[6],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[6],0,MyUiSlotBg[6],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[6],false)
-set MyUiSlotBtn[6]=BDx(MyUiSlotBg[6],"MyAcUI slotbtn6")
-call DzFrameSetSize(MyUiSlotBtn[6],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[6],0,MyUiSlotBg[6],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[6],6)
-call DzFrameSetScriptByCode(MyUiSlotBtn[6],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[6]=-1
-set MyUiSlotBg[7]=BDt(MyUiPanel,"MyAcUI slotbg7")
-call DzFrameSetSize(MyUiSlotBg[7],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[7],0,MyUiPanel,0,120.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[7],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[7]=BDt(MyUiSlotBg[7],"MyAcUI slotico7")
-call DzFrameSetSize(MyUiSlotIcon[7],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[7],0,MyUiSlotBg[7],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[7]=BD6(MyUiSlotBg[7],"MyAcUI slottxt7")
-call DzFrameSetSize(MyUiSlotTxt[7],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[7],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[7],0,MyUiSlotBg[7],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[7],false)
-set MyUiSlotBtn[7]=BDx(MyUiSlotBg[7],"MyAcUI slotbtn7")
-call DzFrameSetSize(MyUiSlotBtn[7],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[7],0,MyUiSlotBg[7],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[7],7)
-call DzFrameSetScriptByCode(MyUiSlotBtn[7],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[7]=-1
-set MyUiSlotBg[8]=BDt(MyUiPanel,"MyAcUI slotbg8")
-call DzFrameSetSize(MyUiSlotBg[8],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[8],0,MyUiPanel,0,225.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[8],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[8]=BDt(MyUiSlotBg[8],"MyAcUI slotico8")
-call DzFrameSetSize(MyUiSlotIcon[8],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[8],0,MyUiSlotBg[8],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[8]=BD6(MyUiSlotBg[8],"MyAcUI slottxt8")
-call DzFrameSetSize(MyUiSlotTxt[8],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[8],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[8],0,MyUiSlotBg[8],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[8],false)
-set MyUiSlotBtn[8]=BDx(MyUiSlotBg[8],"MyAcUI slotbtn8")
-call DzFrameSetSize(MyUiSlotBtn[8],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[8],0,MyUiSlotBg[8],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[8],8)
-call DzFrameSetScriptByCode(MyUiSlotBtn[8],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[8]=-1
-set MyUiSlotBg[9]=BDt(MyUiPanel,"MyAcUI slotbg9")
-call DzFrameSetSize(MyUiSlotBg[9],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[9],0,MyUiPanel,0,330.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[9],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[9]=BDt(MyUiSlotBg[9],"MyAcUI slotico9")
-call DzFrameSetSize(MyUiSlotIcon[9],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[9],0,MyUiSlotBg[9],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[9]=BD6(MyUiSlotBg[9],"MyAcUI slottxt9")
-call DzFrameSetSize(MyUiSlotTxt[9],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[9],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[9],0,MyUiSlotBg[9],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[9],false)
-set MyUiSlotBtn[9]=BDx(MyUiSlotBg[9],"MyAcUI slotbtn9")
-call DzFrameSetSize(MyUiSlotBtn[9],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[9],0,MyUiSlotBg[9],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[9],9)
-call DzFrameSetScriptByCode(MyUiSlotBtn[9],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[9]=-1
-set MyUiSlotBg[10]=BDt(MyUiPanel,"MyAcUI slotbg10")
-call DzFrameSetSize(MyUiSlotBg[10],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[10],0,MyUiPanel,0,435.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[10],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[10]=BDt(MyUiSlotBg[10],"MyAcUI slotico10")
-call DzFrameSetSize(MyUiSlotIcon[10],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[10],0,MyUiSlotBg[10],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[10]=BD6(MyUiSlotBg[10],"MyAcUI slottxt10")
-call DzFrameSetSize(MyUiSlotTxt[10],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[10],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[10],0,MyUiSlotBg[10],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[10],false)
-set MyUiSlotBtn[10]=BDx(MyUiSlotBg[10],"MyAcUI slotbtn10")
-call DzFrameSetSize(MyUiSlotBtn[10],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[10],0,MyUiSlotBg[10],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[10],10)
-call DzFrameSetScriptByCode(MyUiSlotBtn[10],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[10]=-1
-set MyUiSlotBg[11]=BDt(MyUiPanel,"MyAcUI slotbg11")
-call DzFrameSetSize(MyUiSlotBg[11],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[11],0,MyUiPanel,0,540.*1./Kx*Ky,-(204.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[11],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[11]=BDt(MyUiSlotBg[11],"MyAcUI slotico11")
-call DzFrameSetSize(MyUiSlotIcon[11],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[11],0,MyUiSlotBg[11],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[11]=BD6(MyUiSlotBg[11],"MyAcUI slottxt11")
-call DzFrameSetSize(MyUiSlotTxt[11],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[11],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[11],0,MyUiSlotBg[11],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[11],false)
-set MyUiSlotBtn[11]=BDx(MyUiSlotBg[11],"MyAcUI slotbtn11")
-call DzFrameSetSize(MyUiSlotBtn[11],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[11],0,MyUiSlotBg[11],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[11],11)
-call DzFrameSetScriptByCode(MyUiSlotBtn[11],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[11]=-1
-set MyUiSlotBg[12]=BDt(MyUiPanel,"MyAcUI slotbg12")
-call DzFrameSetSize(MyUiSlotBg[12],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[12],0,MyUiPanel,0,15.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[12],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[12]=BDt(MyUiSlotBg[12],"MyAcUI slotico12")
-call DzFrameSetSize(MyUiSlotIcon[12],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[12],0,MyUiSlotBg[12],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[12]=BD6(MyUiSlotBg[12],"MyAcUI slottxt12")
-call DzFrameSetSize(MyUiSlotTxt[12],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[12],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[12],0,MyUiSlotBg[12],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[12],false)
-set MyUiSlotBtn[12]=BDx(MyUiSlotBg[12],"MyAcUI slotbtn12")
-call DzFrameSetSize(MyUiSlotBtn[12],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[12],0,MyUiSlotBg[12],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[12],12)
-call DzFrameSetScriptByCode(MyUiSlotBtn[12],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[12]=-1
-set MyUiSlotBg[13]=BDt(MyUiPanel,"MyAcUI slotbg13")
-call DzFrameSetSize(MyUiSlotBg[13],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[13],0,MyUiPanel,0,120.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[13],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[13]=BDt(MyUiSlotBg[13],"MyAcUI slotico13")
-call DzFrameSetSize(MyUiSlotIcon[13],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[13],0,MyUiSlotBg[13],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[13]=BD6(MyUiSlotBg[13],"MyAcUI slottxt13")
-call DzFrameSetSize(MyUiSlotTxt[13],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[13],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[13],0,MyUiSlotBg[13],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[13],false)
-set MyUiSlotBtn[13]=BDx(MyUiSlotBg[13],"MyAcUI slotbtn13")
-call DzFrameSetSize(MyUiSlotBtn[13],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[13],0,MyUiSlotBg[13],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[13],13)
-call DzFrameSetScriptByCode(MyUiSlotBtn[13],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[13]=-1
-set MyUiSlotBg[14]=BDt(MyUiPanel,"MyAcUI slotbg14")
-call DzFrameSetSize(MyUiSlotBg[14],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[14],0,MyUiPanel,0,225.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[14],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[14]=BDt(MyUiSlotBg[14],"MyAcUI slotico14")
-call DzFrameSetSize(MyUiSlotIcon[14],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[14],0,MyUiSlotBg[14],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[14]=BD6(MyUiSlotBg[14],"MyAcUI slottxt14")
-call DzFrameSetSize(MyUiSlotTxt[14],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[14],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[14],0,MyUiSlotBg[14],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[14],false)
-set MyUiSlotBtn[14]=BDx(MyUiSlotBg[14],"MyAcUI slotbtn14")
-call DzFrameSetSize(MyUiSlotBtn[14],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[14],0,MyUiSlotBg[14],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[14],14)
-call DzFrameSetScriptByCode(MyUiSlotBtn[14],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[14]=-1
-set MyUiSlotBg[15]=BDt(MyUiPanel,"MyAcUI slotbg15")
-call DzFrameSetSize(MyUiSlotBg[15],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[15],0,MyUiPanel,0,330.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[15],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[15]=BDt(MyUiSlotBg[15],"MyAcUI slotico15")
-call DzFrameSetSize(MyUiSlotIcon[15],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[15],0,MyUiSlotBg[15],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[15]=BD6(MyUiSlotBg[15],"MyAcUI slottxt15")
-call DzFrameSetSize(MyUiSlotTxt[15],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[15],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[15],0,MyUiSlotBg[15],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[15],false)
-set MyUiSlotBtn[15]=BDx(MyUiSlotBg[15],"MyAcUI slotbtn15")
-call DzFrameSetSize(MyUiSlotBtn[15],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[15],0,MyUiSlotBg[15],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[15],15)
-call DzFrameSetScriptByCode(MyUiSlotBtn[15],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[15]=-1
-set MyUiSlotBg[16]=BDt(MyUiPanel,"MyAcUI slotbg16")
-call DzFrameSetSize(MyUiSlotBg[16],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[16],0,MyUiPanel,0,435.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[16],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[16]=BDt(MyUiSlotBg[16],"MyAcUI slotico16")
-call DzFrameSetSize(MyUiSlotIcon[16],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[16],0,MyUiSlotBg[16],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[16]=BD6(MyUiSlotBg[16],"MyAcUI slottxt16")
-call DzFrameSetSize(MyUiSlotTxt[16],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[16],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[16],0,MyUiSlotBg[16],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[16],false)
-set MyUiSlotBtn[16]=BDx(MyUiSlotBg[16],"MyAcUI slotbtn16")
-call DzFrameSetSize(MyUiSlotBtn[16],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[16],0,MyUiSlotBg[16],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[16],16)
-call DzFrameSetScriptByCode(MyUiSlotBtn[16],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[16]=-1
-set MyUiSlotBg[17]=BDt(MyUiPanel,"MyAcUI slotbg17")
-call DzFrameSetSize(MyUiSlotBg[17],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[17],0,MyUiPanel,0,540.*1./Kx*Ky,-(292.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[17],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[17]=BDt(MyUiSlotBg[17],"MyAcUI slotico17")
-call DzFrameSetSize(MyUiSlotIcon[17],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[17],0,MyUiSlotBg[17],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[17]=BD6(MyUiSlotBg[17],"MyAcUI slottxt17")
-call DzFrameSetSize(MyUiSlotTxt[17],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[17],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[17],0,MyUiSlotBg[17],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[17],false)
-set MyUiSlotBtn[17]=BDx(MyUiSlotBg[17],"MyAcUI slotbtn17")
-call DzFrameSetSize(MyUiSlotBtn[17],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[17],0,MyUiSlotBg[17],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[17],17)
-call DzFrameSetScriptByCode(MyUiSlotBtn[17],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[17]=-1
-set MyUiSlotBg[18]=BDt(MyUiPanel,"MyAcUI slotbg18")
-call DzFrameSetSize(MyUiSlotBg[18],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[18],0,MyUiPanel,0,15.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[18],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[18]=BDt(MyUiSlotBg[18],"MyAcUI slotico18")
-call DzFrameSetSize(MyUiSlotIcon[18],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[18],0,MyUiSlotBg[18],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[18]=BD6(MyUiSlotBg[18],"MyAcUI slottxt18")
-call DzFrameSetSize(MyUiSlotTxt[18],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[18],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[18],0,MyUiSlotBg[18],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[18],false)
-set MyUiSlotBtn[18]=BDx(MyUiSlotBg[18],"MyAcUI slotbtn18")
-call DzFrameSetSize(MyUiSlotBtn[18],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[18],0,MyUiSlotBg[18],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[18],18)
-call DzFrameSetScriptByCode(MyUiSlotBtn[18],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[18]=-1
-set MyUiSlotBg[19]=BDt(MyUiPanel,"MyAcUI slotbg19")
-call DzFrameSetSize(MyUiSlotBg[19],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[19],0,MyUiPanel,0,120.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[19],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[19]=BDt(MyUiSlotBg[19],"MyAcUI slotico19")
-call DzFrameSetSize(MyUiSlotIcon[19],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[19],0,MyUiSlotBg[19],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[19]=BD6(MyUiSlotBg[19],"MyAcUI slottxt19")
-call DzFrameSetSize(MyUiSlotTxt[19],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[19],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[19],0,MyUiSlotBg[19],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[19],false)
-set MyUiSlotBtn[19]=BDx(MyUiSlotBg[19],"MyAcUI slotbtn19")
-call DzFrameSetSize(MyUiSlotBtn[19],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[19],0,MyUiSlotBg[19],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[19],19)
-call DzFrameSetScriptByCode(MyUiSlotBtn[19],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[19]=-1
-set MyUiSlotBg[20]=BDt(MyUiPanel,"MyAcUI slotbg20")
-call DzFrameSetSize(MyUiSlotBg[20],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[20],0,MyUiPanel,0,225.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[20],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[20]=BDt(MyUiSlotBg[20],"MyAcUI slotico20")
-call DzFrameSetSize(MyUiSlotIcon[20],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[20],0,MyUiSlotBg[20],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[20]=BD6(MyUiSlotBg[20],"MyAcUI slottxt20")
-call DzFrameSetSize(MyUiSlotTxt[20],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[20],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[20],0,MyUiSlotBg[20],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[20],false)
-set MyUiSlotBtn[20]=BDx(MyUiSlotBg[20],"MyAcUI slotbtn20")
-call DzFrameSetSize(MyUiSlotBtn[20],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[20],0,MyUiSlotBg[20],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[20],20)
-call DzFrameSetScriptByCode(MyUiSlotBtn[20],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[20]=-1
-set MyUiSlotBg[21]=BDt(MyUiPanel,"MyAcUI slotbg21")
-call DzFrameSetSize(MyUiSlotBg[21],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[21],0,MyUiPanel,0,330.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[21],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[21]=BDt(MyUiSlotBg[21],"MyAcUI slotico21")
-call DzFrameSetSize(MyUiSlotIcon[21],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[21],0,MyUiSlotBg[21],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[21]=BD6(MyUiSlotBg[21],"MyAcUI slottxt21")
-call DzFrameSetSize(MyUiSlotTxt[21],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[21],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[21],0,MyUiSlotBg[21],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[21],false)
-set MyUiSlotBtn[21]=BDx(MyUiSlotBg[21],"MyAcUI slotbtn21")
-call DzFrameSetSize(MyUiSlotBtn[21],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[21],0,MyUiSlotBg[21],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[21],21)
-call DzFrameSetScriptByCode(MyUiSlotBtn[21],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[21]=-1
-set MyUiSlotBg[22]=BDt(MyUiPanel,"MyAcUI slotbg22")
-call DzFrameSetSize(MyUiSlotBg[22],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[22],0,MyUiPanel,0,435.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[22],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[22]=BDt(MyUiSlotBg[22],"MyAcUI slotico22")
-call DzFrameSetSize(MyUiSlotIcon[22],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[22],0,MyUiSlotBg[22],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[22]=BD6(MyUiSlotBg[22],"MyAcUI slottxt22")
-call DzFrameSetSize(MyUiSlotTxt[22],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[22],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[22],0,MyUiSlotBg[22],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[22],false)
-set MyUiSlotBtn[22]=BDx(MyUiSlotBg[22],"MyAcUI slotbtn22")
-call DzFrameSetSize(MyUiSlotBtn[22],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[22],0,MyUiSlotBg[22],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[22],22)
-call DzFrameSetScriptByCode(MyUiSlotBtn[22],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[22]=-1
-set MyUiSlotBg[23]=BDt(MyUiPanel,"MyAcUI slotbg23")
-call DzFrameSetSize(MyUiSlotBg[23],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[23],0,MyUiPanel,0,540.*1./Kx*Ky,-(380.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[23],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[23]=BDt(MyUiSlotBg[23],"MyAcUI slotico23")
-call DzFrameSetSize(MyUiSlotIcon[23],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[23],0,MyUiSlotBg[23],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[23]=BD6(MyUiSlotBg[23],"MyAcUI slottxt23")
-call DzFrameSetSize(MyUiSlotTxt[23],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[23],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[23],0,MyUiSlotBg[23],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[23],false)
-set MyUiSlotBtn[23]=BDx(MyUiSlotBg[23],"MyAcUI slotbtn23")
-call DzFrameSetSize(MyUiSlotBtn[23],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[23],0,MyUiSlotBg[23],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[23],23)
-call DzFrameSetScriptByCode(MyUiSlotBtn[23],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[23]=-1
-set MyUiSlotBg[24]=BDt(MyUiPanel,"MyAcUI slotbg24")
-call DzFrameSetSize(MyUiSlotBg[24],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[24],0,MyUiPanel,0,15.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[24],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[24]=BDt(MyUiSlotBg[24],"MyAcUI slotico24")
-call DzFrameSetSize(MyUiSlotIcon[24],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[24],0,MyUiSlotBg[24],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[24]=BD6(MyUiSlotBg[24],"MyAcUI slottxt24")
-call DzFrameSetSize(MyUiSlotTxt[24],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[24],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[24],0,MyUiSlotBg[24],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[24],false)
-set MyUiSlotBtn[24]=BDx(MyUiSlotBg[24],"MyAcUI slotbtn24")
-call DzFrameSetSize(MyUiSlotBtn[24],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[24],0,MyUiSlotBg[24],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[24],24)
-call DzFrameSetScriptByCode(MyUiSlotBtn[24],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[24]=-1
-set MyUiSlotBg[25]=BDt(MyUiPanel,"MyAcUI slotbg25")
-call DzFrameSetSize(MyUiSlotBg[25],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[25],0,MyUiPanel,0,120.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[25],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[25]=BDt(MyUiSlotBg[25],"MyAcUI slotico25")
-call DzFrameSetSize(MyUiSlotIcon[25],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[25],0,MyUiSlotBg[25],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[25]=BD6(MyUiSlotBg[25],"MyAcUI slottxt25")
-call DzFrameSetSize(MyUiSlotTxt[25],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[25],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[25],0,MyUiSlotBg[25],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[25],false)
-set MyUiSlotBtn[25]=BDx(MyUiSlotBg[25],"MyAcUI slotbtn25")
-call DzFrameSetSize(MyUiSlotBtn[25],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[25],0,MyUiSlotBg[25],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[25],25)
-call DzFrameSetScriptByCode(MyUiSlotBtn[25],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[25]=-1
-set MyUiSlotBg[26]=BDt(MyUiPanel,"MyAcUI slotbg26")
-call DzFrameSetSize(MyUiSlotBg[26],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[26],0,MyUiPanel,0,225.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[26],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[26]=BDt(MyUiSlotBg[26],"MyAcUI slotico26")
-call DzFrameSetSize(MyUiSlotIcon[26],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[26],0,MyUiSlotBg[26],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[26]=BD6(MyUiSlotBg[26],"MyAcUI slottxt26")
-call DzFrameSetSize(MyUiSlotTxt[26],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[26],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[26],0,MyUiSlotBg[26],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[26],false)
-set MyUiSlotBtn[26]=BDx(MyUiSlotBg[26],"MyAcUI slotbtn26")
-call DzFrameSetSize(MyUiSlotBtn[26],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[26],0,MyUiSlotBg[26],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[26],26)
-call DzFrameSetScriptByCode(MyUiSlotBtn[26],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[26]=-1
-set MyUiSlotBg[27]=BDt(MyUiPanel,"MyAcUI slotbg27")
-call DzFrameSetSize(MyUiSlotBg[27],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[27],0,MyUiPanel,0,330.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[27],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[27]=BDt(MyUiSlotBg[27],"MyAcUI slotico27")
-call DzFrameSetSize(MyUiSlotIcon[27],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[27],0,MyUiSlotBg[27],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[27]=BD6(MyUiSlotBg[27],"MyAcUI slottxt27")
-call DzFrameSetSize(MyUiSlotTxt[27],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[27],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[27],0,MyUiSlotBg[27],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[27],false)
-set MyUiSlotBtn[27]=BDx(MyUiSlotBg[27],"MyAcUI slotbtn27")
-call DzFrameSetSize(MyUiSlotBtn[27],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[27],0,MyUiSlotBg[27],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[27],27)
-call DzFrameSetScriptByCode(MyUiSlotBtn[27],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[27]=-1
-set MyUiSlotBg[28]=BDt(MyUiPanel,"MyAcUI slotbg28")
-call DzFrameSetSize(MyUiSlotBg[28],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[28],0,MyUiPanel,0,435.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[28],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[28]=BDt(MyUiSlotBg[28],"MyAcUI slotico28")
-call DzFrameSetSize(MyUiSlotIcon[28],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[28],0,MyUiSlotBg[28],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[28]=BD6(MyUiSlotBg[28],"MyAcUI slottxt28")
-call DzFrameSetSize(MyUiSlotTxt[28],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[28],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[28],0,MyUiSlotBg[28],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[28],false)
-set MyUiSlotBtn[28]=BDx(MyUiSlotBg[28],"MyAcUI slotbtn28")
-call DzFrameSetSize(MyUiSlotBtn[28],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[28],0,MyUiSlotBg[28],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[28],28)
-call DzFrameSetScriptByCode(MyUiSlotBtn[28],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[28]=-1
-set MyUiSlotBg[29]=BDt(MyUiPanel,"MyAcUI slotbg29")
-call DzFrameSetSize(MyUiSlotBg[29],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBg[29],0,MyUiPanel,0,540.*1./Kx*Ky,-(468.*1.)/Kz*K0)
-call DzFrameSetTexture(MyUiSlotBg[29],"Interface\\BlackBackGround.tga",0)
-set MyUiSlotIcon[29]=BDt(MyUiSlotBg[29],"MyAcUI slotico29")
-call DzFrameSetSize(MyUiSlotIcon[29],52.*1./Kx*Ky,52.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotIcon[29],0,MyUiSlotBg[29],0,24.*1./Kx*Ky,-(3.*1.)/Kz*K0)
-set MyUiSlotTxt[29]=BD6(MyUiSlotBg[29],"MyAcUI slottxt29")
-call DzFrameSetSize(MyUiSlotTxt[29],94.*1./Kx*Ky,26.*1./Kz*K0)
-call DzFrameSetFont(MyUiSlotTxt[29],"Fonts\\esamanruMedium.ttf",10*1.*K3,0)
-call DzFrameSetPoint(MyUiSlotTxt[29],0,MyUiSlotBg[29],0,4.*1./Kx*Ky,-(57.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiSlotTxt[29],false)
-set MyUiSlotBtn[29]=BDx(MyUiSlotBg[29],"MyAcUI slotbtn29")
-call DzFrameSetSize(MyUiSlotBtn[29],100.*1./Kx*Ky,84.*1./Kz*K0)
-call DzFrameSetPoint(MyUiSlotBtn[29],0,MyUiSlotBg[29],0,0.*1./Kx*Ky,-(0.*1.)/Kz*K0)
-call SaveInteger(MyUiMap,0,MyUiSlotBtn[29],29)
-call DzFrameSetScriptByCode(MyUiSlotBtn[29],1,function MyUiSlotClick,false)
-set MyUiSlotIdx[29]=-1
-set MyUiPrevBtn=BDx(MyUiPanel,"MyAcUI prev")
-call DzFrameSetSize(MyUiPrevBtn,100.*1./Kx*Ky,30.*1./Kz*K0)
-call DzFrameSetPoint(MyUiPrevBtn,0,MyUiPanel,0,15.*1./Kx*Ky,-(564.*1.)/Kz*K0)
-set myI=BD6(MyUiPrevBtn,"MyAcUI prevtxt")
-call DzFrameSetFont(myI,"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(myI,0,MyUiPrevBtn,0,18.*1./Kx*Ky,-(7.*1.)/Kz*K0)
-call DzFrameSetText(myI,"< 이전")
-call DzFrameSetEnable(myI,false)
-call DzFrameSetScriptByCode(MyUiPrevBtn,1,function MyUiPrevClick,false)
-set MyUiNextBtn=BDx(MyUiPanel,"MyAcUI next")
-call DzFrameSetSize(MyUiNextBtn,100.*1./Kx*Ky,30.*1./Kz*K0)
-call DzFrameSetPoint(MyUiNextBtn,0,MyUiPanel,0,125.*1./Kx*Ky,-(564.*1.)/Kz*K0)
-set myI=BD6(MyUiNextBtn,"MyAcUI nexttxt")
-call DzFrameSetFont(myI,"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(myI,0,MyUiNextBtn,0,18.*1./Kx*Ky,-(7.*1.)/Kz*K0)
-call DzFrameSetText(myI,"다음 >")
-call DzFrameSetEnable(myI,false)
-call DzFrameSetScriptByCode(MyUiNextBtn,1,function MyUiNextClick,false)
-set MyUiPageTxt=BD6(MyUiPanel,"MyAcUI pagetxt")
-call DzFrameSetFont(MyUiPageTxt,"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiPageTxt,0,MyUiPanel,0,245.*1./Kx*Ky,-(571.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiPageTxt,false)
-set MyUiDetailIcon=BDt(MyUiPanel,"MyAcUI detailico")
-call DzFrameSetSize(MyUiDetailIcon,90.*1./Kx*Ky,90.*1./Kz*K0)
-call DzFrameSetPoint(MyUiDetailIcon,0,MyUiPanel,0,690.*1./Kx*Ky,-(120.*1.)/Kz*K0)
-call DzFrameShow(MyUiDetailIcon,false)
-set MyUiDetailName=BD6(MyUiPanel,"MyAcUI detailname")
-call DzFrameSetSize(MyUiDetailName,480.*1./Kx*Ky,60.*1./Kz*K0)
-call DzFrameSetFont(MyUiDetailName,"Fonts\\esamanruMedium.ttf",17*1.*K3,0)
-call DzFrameSetPoint(MyUiDetailName,0,MyUiPanel,0,795.*1./Kx*Ky,-(140.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiDetailName,false)
-set MyUiDetailText=BD6(MyUiPanel,"MyAcUI detailtext")
-call DzFrameSetSize(MyUiDetailText,570.*1./Kx*Ky,300.*1./Kz*K0)
-call DzFrameSetFont(MyUiDetailText,"Fonts\\esamanruMedium.ttf",13*1.*K3,0)
-call DzFrameSetPoint(MyUiDetailText,0,MyUiPanel,0,695.*1./Kx*Ky,-(225.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiDetailText,false)
-set MyUiComboBtn=BDx(MyUiPanel,"MyAcUI combo")
-call DzFrameSetSize(MyUiComboBtn,420.*1./Kx*Ky,44.*1./Kz*K0)
-call DzFrameSetPoint(MyUiComboBtn,0,MyUiPanel,0,695.*1./Kx*Ky,-(552.*1.)/Kz*K0)
-set MyUiComboTxt=BD6(MyUiComboBtn,"MyAcUI combotxt")
-call DzFrameSetFont(MyUiComboTxt,"Fonts\\esamanruMedium.ttf",17*1.*K3,0)
-call DzFrameSetPoint(MyUiComboTxt,0,MyUiComboBtn,0,150.*1./Kx*Ky,-(10.*1.)/Kz*K0)
-call DzFrameSetEnable(MyUiComboTxt,false)
-call DzFrameSetScriptByCode(MyUiComboBtn,1,function MyUiComboClick,false)
+loop
+exitwhen myI>=MyAllCnt
+call SaveInteger(MyUiMap,6,MyAllType[myI],myI+1)
+set myI=myI+1
+endloop
+call SaveStr(MyUiMap,5,$48303854,"ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp")
+call SaveStr(MyUiMap,5,$68303031,"BTN\\BTN0003_Nami.blp")
+call SaveStr(MyUiMap,5,$68303032,"BTN\\BTN0002_zoro.blp")
+call SaveStr(MyUiMap,5,$68303033,"BTN\\BTN0001_Luffy.blp")
+call SaveStr(MyUiMap,5,$68303034,"BTN\\BTN0005_sanji.blp")
+call SaveStr(MyUiMap,5,$68303035,"BTN\\BTN0007_buggy.blp")
+call SaveStr(MyUiMap,5,$68303036,"BTN\\BTN0009_marine_sword.blp")
+call SaveStr(MyUiMap,5,$68303037,"BTN\\BTN0004_usop.blp")
+call SaveStr(MyUiMap,5,$68303038,"BTN\\BTN0006_chopa.blp")
+call SaveStr(MyUiMap,5,$68303039,"BTN\\BTN0008_marine_rifle.blp")
+call SaveStr(MyUiMap,5,$68303048,"ReplaceableTextures\\CommandButtons\\BTNZombie.blp")
+call SaveStr(MyUiMap,5,$68303453,"BTN\\BTN0515_Kuma.blp")
+call SaveStr(MyUiMap,5,$68303559,"ReplaceableTextures\\CommandButtons\\BTNShip.blp")
+call SaveStr(MyUiMap,5,$68303647,"ReplaceableTextures\\CommandButtons\\BTNSpellShieldAmulet.blp")
+call SaveStr(MyUiMap,5,$6830414E,"ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp")
+set MyEvalTrig=CreateTrigger()
+call TriggerAddCondition(MyEvalTrig,Condition(function MyEvalCond))
+set MyClock=CreateTimer()
+call TimerStart(MyClock,1000000.,false,null)
+set MyUiTick=CreateTimer()
+call TimerStart(MyUiTick,1.,true,function MyUiTickFn)
 call BeE("MYAC",function MyAcSync)
 set MyKeyTrig=CreateTrigger()
-call DzTriggerRegisterKeyEventByCode(MyKeyTrig,73,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyI)
-call DzTriggerRegisterKeyEventByCode(MyKeyTrig,13,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyEnter)
-call DzTriggerRegisterKeyEventByCode(MyKeyTrig,27,bj_KEYEVENTTYPE_RELEASE,false,function MyUiKeyEsc)
 set MyChatCmdTrig=CreateTrigger()
+set MyChatAnyTrig=CreateTrigger()
 set myI=0
 loop
 exitwhen myI>=LG
 call TriggerRegisterPlayerChatEvent(MyChatCmdTrig,Player(myI),"-자동조합",true)
+call TriggerRegisterPlayerChatEvent(MyChatAnyTrig,Player(myI),"",false)
 set myI=myI+1
 endloop
 call TriggerAddAction(MyChatCmdTrig,function MyUiChatCmd)
-call MyUiRefreshGrid()
-call MyUiRefreshDetail()
+call TriggerAddAction(MyChatAnyTrig,function MyUiChatAny)
+call TimerStart(CreateTimer(),.5,false,function MyUiBoot)
 endfunction
 function main takes nothing returns nothing
 call SetCameraBounds(-9472.+GetCameraMargin(CAMERA_MARGIN_LEFT),-10752.+GetCameraMargin(CAMERA_MARGIN_BOTTOM),9728.-GetCameraMargin(CAMERA_MARGIN_RIGHT),7168.-GetCameraMargin(CAMERA_MARGIN_TOP),-9472.+GetCameraMargin(CAMERA_MARGIN_LEFT),7168.-GetCameraMargin(CAMERA_MARGIN_TOP),9728.-GetCameraMargin(CAMERA_MARGIN_RIGHT),-10752.+GetCameraMargin(CAMERA_MARGIN_BOTTOM))
