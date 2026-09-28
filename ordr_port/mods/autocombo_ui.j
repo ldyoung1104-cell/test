@@ -442,8 +442,8 @@ call DzFrameSetText(MyChipTxt[myC],"|cffffd700"+myT+"|r")
 call DzFrameSetAlpha(MyChipBg[myC],255)
 call DzFrameShow(MyChipLine[myC],true)
 else
-call DzFrameSetText(MyChipTxt[myC],"|cffb0b0b0"+myT+"|r")
-call DzFrameSetAlpha(MyChipBg[myC],110)
+call DzFrameSetText(MyChipTxt[myC],"|cffe0e0e0"+myT+"|r")
+call DzFrameSetAlpha(MyChipBg[myC],200)
 call DzFrameShow(MyChipLine[myC],false)
 endif
 set myC=myC+1
@@ -452,15 +452,15 @@ if MyFltReady then
 call DzFrameSetText(MyFltReadyTxt,"|cff55ff55조합 가능만  ON|r")
 call DzFrameSetAlpha(MyFltReadyBg,255)
 else
-call DzFrameSetText(MyFltReadyTxt,"|cff999999조합 가능만  OFF|r")
-call DzFrameSetAlpha(MyFltReadyBg,130)
+call DzFrameSetText(MyFltReadyTxt,"|cffc8c8c8조합 가능만  OFF|r")
+call DzFrameSetAlpha(MyFltReadyBg,210)
 endif
 if MyFltSort then
 call DzFrameSetText(MyFltSortTxt,"|cff55ff55진행률순 정렬  ON|r")
 call DzFrameSetAlpha(MyFltSortBg,255)
 else
-call DzFrameSetText(MyFltSortTxt,"|cff999999진행률순 정렬  OFF|r")
-call DzFrameSetAlpha(MyFltSortBg,130)
+call DzFrameSetText(MyFltSortTxt,"|cffc8c8c8진행률순 정렬  OFF|r")
+call DzFrameSetAlpha(MyFltSortBg,210)
 endif
 endfunction
 function MyUiRenderCards takes nothing returns nothing
@@ -519,7 +519,7 @@ set MyRowUt[myR]=myUt
 if LoadInteger(MyUiMap,6,myUt)>0 then
 call DzFrameSetAlpha(MyRowBg[myR],255)
 else
-call DzFrameSetAlpha(MyRowBg[myR],170)
+call DzFrameSetAlpha(MyRowBg[myR],215)
 endif
 endfunction
 function MyUiRenderDetail takes nothing returns nothing
@@ -845,7 +845,7 @@ set myB=MyBtn(MyFltReadyBg,0.,0.,170.,28.,function MyUiFltReadyClick)
 set MyFltSortBg=MyBox(MyUiRoot,"ORDRTooltipBack",202.,126.,170.,28.)
 set MyFltSortTxt=MyTxt(MyFltSortBg,0.,0.,170.,28.,11.,18)
 set myB=MyBtn(MyFltSortBg,0.,0.,170.,28.,function MyUiFltSortClick)
-set MyCountTxt=MyTxt(MyUiRoot,388.,126.,200.,28.,12.,17)
+set MyCountTxt=MyTxt(MyUiRoot,388.,126.,200.,28.,12.,10)
 set myF=MyBox(MyUiRoot,"ORDRTooltipBack",722.,126.,44.,28.)
 set myT=MyTxt(myF,0.,0.,44.,28.,13.,18)
 call DzFrameSetText(myT,"|cffffffff<|r")
@@ -910,8 +910,8 @@ exitwhen myR>=10
 set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*31.,420.,29.)
 set MyRowBg[myR]=myF
 set MyRowIcon[myR]=MyTex(myF,"",3.,2.,25.,25.)
-set MyRowName[myR]=MyTxt(myF,36.,0.,260.,29.,12.,17)
-set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,29.,12.,20)
+set MyRowName[myR]=MyTxt(myF,36.,0.,260.,29.,12.,10)
+set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,29.,12.,34)
 set myB=MyBtn(myF,0.,0.,420.,29.,function MyUiRowClick)
 call SaveInteger(MyUiMap,2,myB,myR)
 set myR=myR+1
