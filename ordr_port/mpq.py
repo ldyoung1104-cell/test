@@ -1,5 +1,19 @@
 import ctypes, sys, os
-L = ctypes.CDLL(os.environ.get("STORMLIB", "/tmp/claude-0/work/StormLib/build/libstorm.so"))
+
+
+def _find_stormlib():
+    """STORMLIB 환경변수 -> 이 폴더의 StormLib.dll/libstorm.so -> 이 세션에서 빌드한 경로."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    cands = [os.environ.get("STORMLIB", "")]
+    cands += [os.path.join(here, n) for n in ("StormLib.dll", "libstorm.so", "libstorm.dylib")]
+    cands += ["/tmp/claude-0/work/StormLib/build/libstorm.so"]
+    for c in cands:
+        if c and os.path.exists(c):
+            return c
+    raise OSError("StormLib 을 찾을 수 없습니다. STORMLIB 환경변수나 ordr_port 폴더에 StormLib.dll 을 두세요.")
+
+
+L = ctypes.CDLL(_find_stormlib())
 H = ctypes.c_void_p
 L.SFileOpenArchive.argtypes=[ctypes.c_char_p, ctypes.c_uint, ctypes.c_uint, ctypes.POINTER(H)]
 L.SFileOpenFileEx.argtypes=[H, ctypes.c_char_p, ctypes.c_uint, ctypes.POINTER(H)]
