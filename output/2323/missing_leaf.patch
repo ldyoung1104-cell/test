@@ -1,0 +1,148 @@
+--- a/war3map.j
++++ b/war3map.j
+@@ -2383,6 +2383,11 @@
+ integer MyBackBg=0
+ integer array MyHist
+ integer MyHistN=0
++boolean MyRecMiss=false
++integer array MyMissUt
++integer array MyMissCnt
++integer MyMissN=0
++integer MyDtMiss=0
+ endglobals
+ native DzGetGameUI takes nothing returns integer
+ native DzCreateFrame takes string frame,integer parent,integer id returns integer
+@@ -64647,6 +64652,22 @@
+ endif
+ return LoadInteger(MyUiMap,30,myUt)
+ endfunction
++function MyMissAdd takes integer myUt,integer myN returns nothing
++local integer myK=0
++loop
++exitwhen myK>=MyMissN
++if MyMissUt[myK]==myUt then
++set MyMissCnt[myK]=MyMissCnt[myK]+myN
++return
++endif
++set myK=myK+1
++endloop
++if MyMissN<32 then
++set MyMissUt[MyMissN]=myUt
++set MyMissCnt[MyMissN]=myN
++set MyMissN=MyMissN+1
++endif
++endfunction
+ function MyEval takes integer myI returns nothing
+ local integer myK=MyAllKey[myI]
+ local integer myN=LoadInteger(Wb,myK,We)
+@@ -64721,6 +64742,8 @@
+ endif
+ set mySs=mySs+1
+ endloop
++elseif myQ>0 and MyRecMiss then
++call MyMissAdd(myM,myQ)
+ endif
+ endloop
+ if myTot<=0 then
+@@ -64800,6 +64823,31 @@
+ endif
+ return GetObjectName(myUt)
+ endfunction
++function MyLeafName takes integer myUt returns string
++if HaveSavedString(MyUiMap,7,myUt) then
++return LoadStr(MyUiMap,7,myUt)
++endif
++return MyUtName(myUt)
++endfunction
++function MyMissText takes integer myI returns string
++local integer myK=0
++local string myS=""
++if MyState[myI]==4 then
++return ""
++endif
++if MyMissN==0 then
++return "|cffffd700부족한 최하위 재료|r  |cff55ff55없음|r"
++endif
++loop
++exitwhen myK>=MyMissN
++if myK>0 then
++set myS=myS+"|cff777777,|r "
++endif
++set myS=myS+"|cffffffff"+MyLeafName(MyMissUt[myK])+"|r|cffffd24a x"+I2S(MyMissCnt[myK])+"|r"
++set myK=myK+1
++endloop
++return "|cffffd700부족한 최하위 재료|r  "+myS
++endfunction
+ function MyCntText takes integer myHave,integer myNeed,boolean myCraft returns string
+ if myHave>=myNeed then
+ return "|cff55ff55"+I2S(myHave)+" / "+I2S(myNeed)+"|r"
+@@ -64974,7 +65022,11 @@
+ endif
+ call DzFrameShow(MyDtEmpty,false)
+ call DzFrameShow(MyDtBody,true)
++set MyMissN=0
++set MyRecMiss=true
+ call MyEvalRun(myI)
++set MyRecMiss=false
++call DzFrameSetText(MyDtMiss,MyMissText(myI))
+ call DzFrameSetTexture(MyDtIcon,MyAllIcon[myI],0)
+ call DzFrameSetText(MyDtName,MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
+ call DzFrameSetText(MyDtGrade,MyGradeColor(MyAllGrade[myI])+MyGradeName(MyAllGrade[myI])+"|r |cff888888등급|r")
+@@ -65340,15 +65392,16 @@
+ set myB=MyBtn(MyBackBg,0.,0.,96.,26.,function MyUiBackClick)
+ loop
+ exitwhen myR>=10
+-set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*31.,420.,29.)
++set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*26.,420.,24.)
+ set MyRowBg[myR]=myF
+-set MyRowIcon[myR]=MyTex(myF,"",3.,2.,25.,25.)
+-set MyRowName[myR]=MyTxt(myF,36.,0.,260.,29.,12.,10)
+-set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,29.,12.,34)
+-set myB=MyBtn(myF,0.,0.,420.,29.,function MyUiRowClick)
++set MyRowIcon[myR]=MyTex(myF,"",3.,2.,20.,20.)
++set MyRowName[myR]=MyTxt(myF,30.,0.,264.,24.,12.,10)
++set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,24.,12.,34)
++set myB=MyBtn(myF,0.,0.,420.,24.,function MyUiRowClick)
+ call SaveInteger(MyUiMap,2,myB,myR)
+ set myR=myR+1
+ endloop
++set MyDtMiss=MyTxt(MyDtBody,18.,450.,420.,44.,11.,0)
+ set MyCmbBg=MyBox(MyDtBody,"ORDRTooltipBack",18.,496.,420.,40.)
+ set MyCmbFill=MyTex(MyCmbBg,"ReplaceableTextures\\TeamColor\\TeamColor06.blp",4.,4.,412.,32.)
+ call DzFrameSetAlpha(MyCmbFill,110)
+@@ -67465,20 +67518,35 @@
+ set myI=myI+1
+ endloop
+ call SaveStr(MyUiMap,5,$48303854,"ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp")
++call SaveStr(MyUiMap,7,$48303854,"해적왕이 될 사나이 / 다섯번째 황제")
+ call SaveStr(MyUiMap,5,$68303031,"BTN\\BTN0003_Nami.blp")
++call SaveStr(MyUiMap,7,$68303031,"나미")
+ call SaveStr(MyUiMap,5,$68303032,"BTN\\BTN0002_zoro.blp")
++call SaveStr(MyUiMap,7,$68303032,"롤로노아 조로")
+ call SaveStr(MyUiMap,5,$68303033,"BTN\\BTN0001_Luffy.blp")
++call SaveStr(MyUiMap,7,$68303033,"몽키.D.루피")
+ call SaveStr(MyUiMap,5,$68303034,"BTN\\BTN0005_sanji.blp")
++call SaveStr(MyUiMap,7,$68303034,"상디")
+ call SaveStr(MyUiMap,5,$68303035,"BTN\\BTN0007_buggy.blp")
++call SaveStr(MyUiMap,7,$68303035,"버기")
+ call SaveStr(MyUiMap,5,$68303036,"BTN\\BTN0009_marine_sword.blp")
++call SaveStr(MyUiMap,7,$68303036,"해군 칼병")
+ call SaveStr(MyUiMap,5,$68303037,"BTN\\BTN0004_usop.blp")
++call SaveStr(MyUiMap,7,$68303037,"우솝")
+ call SaveStr(MyUiMap,5,$68303038,"BTN\\BTN0006_chopa.blp")
++call SaveStr(MyUiMap,7,$68303038,"토니토니 쵸파")
+ call SaveStr(MyUiMap,5,$68303039,"BTN\\BTN0008_marine_rifle.blp")
++call SaveStr(MyUiMap,7,$68303039,"해군 총병")
+ call SaveStr(MyUiMap,5,$68303048,"ReplaceableTextures\\CommandButtons\\BTNZombie.blp")
++call SaveStr(MyUiMap,7,$68303048,"좀비")
+ call SaveStr(MyUiMap,5,$68303453,"BTN\\BTN0515_Kuma.blp")
++call SaveStr(MyUiMap,7,$68303453,"바솔로뮤 쿠마")
+ call SaveStr(MyUiMap,5,$68303559,"ReplaceableTextures\\CommandButtons\\BTNShip.blp")
++call SaveStr(MyUiMap,7,$68303559,"고대의 배")
+ call SaveStr(MyUiMap,5,$68303647,"ReplaceableTextures\\CommandButtons\\BTNSpellShieldAmulet.blp")
++call SaveStr(MyUiMap,7,$68303647,"행운의 토큰")
+ call SaveStr(MyUiMap,5,$6830414E,"ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp")
++call SaveStr(MyUiMap,7,$6830414E,"세라핌 등급 유닛")
+ set MyEvalTrig=CreateTrigger()
+ call TriggerAddCondition(MyEvalTrig,Condition(function MyEvalCond))
+ set MyClock=CreateTimer()

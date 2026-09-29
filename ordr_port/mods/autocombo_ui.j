@@ -65,6 +65,11 @@ integer MyCmbFill=0
 integer MyBackBg=0
 integer array MyHist
 integer MyHistN=0
+boolean MyRecMiss=false
+integer array MyMissUt
+integer array MyMissCnt
+integer MyMissN=0
+integer MyDtMiss=0
 //#END
 //#FUNCS
 function MyPx takes real myP returns real
@@ -214,6 +219,22 @@ call SaveInteger(MyUiMap,30,myUt,MyOwned(MyEvalPid,myUt))
 endif
 return LoadInteger(MyUiMap,30,myUt)
 endfunction
+function MyMissAdd takes integer myUt,integer myN returns nothing
+local integer myK=0
+loop
+exitwhen myK>=MyMissN
+if MyMissUt[myK]==myUt then
+set MyMissCnt[myK]=MyMissCnt[myK]+myN
+return
+endif
+set myK=myK+1
+endloop
+if MyMissN<32 then
+set MyMissUt[MyMissN]=myUt
+set MyMissCnt[MyMissN]=myN
+set MyMissN=MyMissN+1
+endif
+endfunction
 function MyEval takes integer myI returns nothing
 local integer myK=MyAllKey[myI]
 local integer myN=LoadInteger(Wb,myK,We)
@@ -288,6 +309,8 @@ set myTop=myTop+1
 endif
 set mySs=mySs+1
 endloop
+elseif myQ>0 and MyRecMiss then
+call MyMissAdd(myM,myQ)
 endif
 endloop
 if myTot<=0 then
@@ -366,6 +389,31 @@ if myX>0 then
 return MyGradeColor(MyAllGrade[myX-1])+MyAllShort[myX-1]+"|r"
 endif
 return GetObjectName(myUt)
+endfunction
+function MyLeafName takes integer myUt returns string
+if HaveSavedString(MyUiMap,7,myUt) then
+return LoadStr(MyUiMap,7,myUt)
+endif
+return MyUtName(myUt)
+endfunction
+function MyMissText takes integer myI returns string
+local integer myK=0
+local string myS=""
+if MyState[myI]==4 then
+return ""
+endif
+if MyMissN==0 then
+return "|cffffd700부족한 최하위 재료|r  |cff55ff55없음|r"
+endif
+loop
+exitwhen myK>=MyMissN
+if myK>0 then
+set myS=myS+"|cff777777,|r "
+endif
+set myS=myS+"|cffffffff"+MyLeafName(MyMissUt[myK])+"|r|cffffd24a x"+I2S(MyMissCnt[myK])+"|r"
+set myK=myK+1
+endloop
+return "|cffffd700부족한 최하위 재료|r  "+myS
 endfunction
 function MyCntText takes integer myHave,integer myNeed,boolean myCraft returns string
 if myHave>=myNeed then
@@ -541,7 +589,11 @@ return
 endif
 call DzFrameShow(MyDtEmpty,false)
 call DzFrameShow(MyDtBody,true)
+set MyMissN=0
+set MyRecMiss=true
 call MyEvalRun(myI)
+set MyRecMiss=false
+call DzFrameSetText(MyDtMiss,MyMissText(myI))
 call DzFrameSetTexture(MyDtIcon,MyAllIcon[myI],0)
 call DzFrameSetText(MyDtName,MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
 call DzFrameSetText(MyDtGrade,MyGradeColor(MyAllGrade[myI])+MyGradeName(MyAllGrade[myI])+"|r |cff888888등급|r")
@@ -907,15 +959,16 @@ call DzFrameSetText(myT,"|cffffffff< 뒤로|r")
 set myB=MyBtn(MyBackBg,0.,0.,96.,26.,function MyUiBackClick)
 loop
 exitwhen myR>=10
-set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*31.,420.,29.)
+set myF=MyBox(MyDtBody,"ORDRDashBoardPanelBlack",18.,188.+I2R(myR)*26.,420.,24.)
 set MyRowBg[myR]=myF
-set MyRowIcon[myR]=MyTex(myF,"",3.,2.,25.,25.)
-set MyRowName[myR]=MyTxt(myF,36.,0.,260.,29.,12.,10)
-set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,29.,12.,34)
-set myB=MyBtn(myF,0.,0.,420.,29.,function MyUiRowClick)
+set MyRowIcon[myR]=MyTex(myF,"",3.,2.,20.,20.)
+set MyRowName[myR]=MyTxt(myF,30.,0.,264.,24.,12.,10)
+set MyRowCnt[myR]=MyTxt(myF,290.,0.,122.,24.,12.,34)
+set myB=MyBtn(myF,0.,0.,420.,24.,function MyUiRowClick)
 call SaveInteger(MyUiMap,2,myB,myR)
 set myR=myR+1
 endloop
+set MyDtMiss=MyTxt(MyDtBody,18.,450.,420.,44.,11.,0)
 set MyCmbBg=MyBox(MyDtBody,"ORDRTooltipBack",18.,496.,420.,40.)
 set MyCmbFill=MyTex(MyCmbBg,"ReplaceableTextures\\TeamColor\\TeamColor06.blp",4.,4.,412.,32.)
 call DzFrameSetAlpha(MyCmbFill,110)

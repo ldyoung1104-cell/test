@@ -51,17 +51,27 @@ def extra_icons(lines, map_path):
     mats = set(re.findall(r"call \w+\(\$554E4954,\$([0-9A-F]{8}),\d+\)", "\n".join(lines)))
     h = mpq.open_archive(map_path)
     txt = (mpq.read(h, "Units\\CampaignUnitStrings.txt") or b"").decode("utf-8", "replace")
-    art = {}
+    art, name = {}, {}
     for blk in re.split(r"\n(?=\[)", txt.replace("\r", "")):
         m = re.match(r"\[(\w{4})\]", blk)
+        if not m:
+            continue
         a = re.search(r"^Art=([^,\n]+)", blk, re.M)
-        if m and a:
+        if a:
             art[m.group(1)] = a.group(1)
+        n = re.search(r"^Name=(.+)$", blk, re.M)
+        if n:
+            # "|cff..해군 칼병|r - |cff..흔함|r" -> "해군 칼병"
+            plain = re.sub(r"\|c[0-9a-fA-F]{8}|\|r", "", n.group(1)).split(" - ")[0].strip()
+            if plain and '"' not in plain and "\\" not in plain:
+                name[m.group(1)] = plain
     out = []
     for hx in sorted(mats - mine):
         uid = bytes.fromhex(hx).decode("latin-1")
         if uid in art:
             out.append('call SaveStr(MyUiMap,5,$%s,"%s")' % (hx, art[uid].replace("\\", "\\\\")))
+        if uid in name:
+            out.append('call SaveStr(MyUiMap,7,$%s,"%s")' % (hx, name[uid]))
     return out
 
 
