@@ -1,0 +1,146 @@
+--- a/war3map.j
++++ b/war3map.j
+@@ -64448,6 +64448,13 @@
+ endif
+ return true
+ endfunction
++function MyNoAuto takes integer myUt returns boolean
++local integer myX=LoadInteger(MyUiMap,6,myUt)
++if myX<=0 then
++return false
++endif
++return MyAllGrade[myX-1]>=12
++endfunction
+ function MyAcNode takes integer myUt,integer myDepth returns boolean
+ local integer myPid=GetPlayerId(MyCurPlayer)
+ local integer myKey
+@@ -64461,6 +64468,9 @@
+ if myDepth>12 then
+ return false
+ endif
++if MyNoAuto(myUt) then
++return false
++endif
+ if not HaveSavedInteger(MyKeyMap,myUt,0) then
+ return false
+ endif
+@@ -64628,7 +64638,7 @@
+ if HaveSavedInteger(MyUiMap,20,myUt) then
+ return LoadInteger(MyUiMap,20,myUt)
+ endif
+-if myD<10 and HaveSavedInteger(MyKeyMap,myUt,0) then
++if myD<10 and HaveSavedInteger(MyKeyMap,myUt,0) and not MyNoAuto(myUt) then
+ set myK=LoadInteger(MyKeyMap,myUt,0)
+ set myN=LoadInteger(Wb,myK,We)
+ loop
+@@ -64729,7 +64739,7 @@
+ call SaveInteger(MyUiMap,30,myM,myOwn-myUse)
+ set myPr=myPr+myUse*MyLeaf(myM,0)
+ set myQ=myQ-myUse
+-if myQ>0 and HaveSavedInteger(MyKeyMap,myM,0) then
++if myQ>0 and HaveSavedInteger(MyKeyMap,myM,0) and not MyNoAuto(myM) then
+ set mySk=LoadInteger(MyKeyMap,myM,0)
+ set mySn=LoadInteger(Wb,mySk,We)
+ set mySs=0
+@@ -64765,6 +64775,9 @@
+ else
+ set MyState[myI]=1
+ endif
++if MyNoAuto(MyAllType[myI]) then
++set MyState[myI]=5
++endif
+ endfunction
+ function MyEvalCond takes nothing returns boolean
+ call MyEval(MyEvalIdx)
+@@ -64775,7 +64788,9 @@
+ call TriggerEvaluate(MyEvalTrig)
+ endfunction
+ function MyStatText takes integer myI returns string
+-if MyState[myI]==4 then
++if MyState[myI]==5 then
++return "|cffff6060자동조합 불가|r"
++elseif MyState[myI]==4 then
+ return "|cffc9a0ff특수 조합|r"
+ elseif MyState[myI]==2 then
+ if MyResLack[myI] then
+@@ -64832,7 +64847,7 @@
+ function MyMissText takes integer myI returns string
+ local integer myK=0
+ local string myS=""
+-if MyState[myI]==4 then
++if MyState[myI]==4 or MyState[myI]==5 then
+ return ""
+ endif
+ if MyMissN==0 then
+@@ -64861,7 +64876,7 @@
+ return 103
+ elseif MyState[myI]==3 then
+ return 102
+-elseif MyState[myI]==4 then
++elseif MyState[myI]==4 or MyState[myI]==5 then
+ return 0
+ endif
+ return MyPct[myI]+1
+@@ -64975,7 +64990,7 @@
+ else
+ call DzFrameSetText(MyCardOwn[myS],"|cff666666미보유|r")
+ endif
+-if MyState[myI]==4 then
++if MyState[myI]==4 or MyState[myI]==5 then
+ call MySetBar(MyCardBar[myS],120.,8.,0)
+ else
+ call DzFrameSetTexture(MyCardBar[myS],MyBarTex(myI),0)
+@@ -65031,7 +65046,10 @@
+ call DzFrameSetText(MyDtName,MyGradeColor(MyAllGrade[myI])+MyAllShort[myI]+"|r")
+ call DzFrameSetText(MyDtGrade,MyGradeColor(MyAllGrade[myI])+MyGradeName(MyAllGrade[myI])+"|r |cff888888등급|r")
+ call DzFrameSetText(MyDtOwn,"|cff888888보유|r |cffffffff"+I2S(MyOwned(myPid,MyAllType[myI]))+"기|r")
+-if MyState[myI]==4 then
++if MyState[myI]==5 then
++call MySetBar(MyDtBar,420.,18.,0)
++call DzFrameSetText(MyDtPct,"|cffff6060자동조합 불가|r")
++elseif MyState[myI]==4 then
+ call MySetBar(MyDtBar,420.,18.,0)
+ call DzFrameSetText(MyDtPct,"|cffc9a0ff특수 조합|r")
+ else
+@@ -65047,6 +65065,8 @@
+ endif
+ elseif MyState[myI]==3 then
+ call DzFrameSetText(MyDtStat,"|cffffd24a부족한 재료를 하위 조합으로 채울 수 있습니다. 자동조합을 누르면 순서대로 진행합니다.|r")
++elseif MyState[myI]==5 then
++call DzFrameSetText(MyDtStat,"|cffff9f40특수 / 세라핌 / 랜덤전용 / 미분류 유닛은 자동조합할 수 없습니다. 정해진 방법(확률 획득, 그린블러드, 도박 등)으로만 얻을 수 있습니다.|r")
+ elseif MyState[myI]==4 then
+ call DzFrameSetText(MyDtStat,"|cffaaaaaa유닛 재료가 없는 특수 조합입니다. 아래 조건을 확인하세요.|r")
+ else
+@@ -65060,7 +65080,7 @@
+ set myM=LoadInteger(Wr,myK,myS)
+ set myQ=LoadInteger(Ws,myK,myS)
+ if myC==$554E4954 then
+-call MyRowSet(myR,MyUtIcon(myM),MyUtName(myM),MyCntText(MyOwned(myPid,myM),myQ,HaveSavedInteger(MyKeyMap,myM,0)),myM)
++call MyRowSet(myR,MyUtIcon(myM),MyUtName(myM),MyCntText(MyOwned(myPid,myM),myQ,HaveSavedInteger(MyKeyMap,myM,0) and not MyNoAuto(myM)),myM)
+ set myR=myR+1
+ elseif myC==$474F4C44 then
+ call MyRowSet(myR,"ReplaceableTextures\\CommandButtons\\BTNChestOfGold.blp","|cffffd700골드|r",MyCntText(GetPlayerState(Player(myPid),PLAYER_STATE_RESOURCE_GOLD),myQ,false),0)
+@@ -65108,8 +65128,12 @@
+ else
+ call DzFrameSetAlpha(MyCmbBg,160)
+ call DzFrameShow(MyCmbFill,false)
++if MyState[myI]==5 then
++call DzFrameSetText(MyCmbTxt,"|cffff6060자동조합 불가|r")
++else
+ call DzFrameSetText(MyCmbTxt,"|cff8a8a8a자동조합 실행|r")
+ endif
++endif
+ call DzFrameShow(MyBackBg,MyHistN>0)
+ endfunction
+ function MyUiRefresh takes boolean myFull returns nothing
+@@ -65420,6 +65444,10 @@
+ function MyAcSync takes nothing returns nothing
+ local integer myUt=S2I(DzGetTriggerSyncData())
+ set MyCurPlayer=DzGetTriggerSyncPlayer()
++if MyNoAuto(myUt) then
++call DisplayTimedTextToPlayer(MyCurPlayer,0,0,6,"|cffff0000[자동조합]|r 특수 / 세라핌 / 랜덤전용 / 미분류 유닛은 자동조합할 수 없습니다.")
++return
++endif
+ if MyAcNode(myUt,0) then
+ call DisplayTimedTextToPlayer(MyCurPlayer,0,0,6,"|cff00ff00[자동조합]|r 조합을 완료했습니다.")
+ else
